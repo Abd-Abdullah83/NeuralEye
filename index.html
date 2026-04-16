@@ -123,8 +123,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .input-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1)}
 
 /* IMAGE PREVIEW */
-#imagePreview{max-width:100%;max-height:300px;border-radius:var(--radius);border:1px solid var(--border);object-fit:contain;display:none;margin:16px auto;display:none}
-
+#imagePreview{max-width:100%;max-height:300px;border-radius:var(--radius);border:1px solid var(--border);object-fit:contain;margin:16px auto}
 /* LOADING */
 .loading-bar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:2px}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
@@ -938,6 +937,7 @@ let userGuess = null;
 let analysisResult = null;
 let confidenceChartInst = null;
 let currentLang = 'en';
+let isListening = false;
 let analyzedCount = parseInt(localStorage.getItem('ne_analyzed') || '0');
 
 // ============================================================
@@ -1141,7 +1141,23 @@ async function callHuggingFace(apiKey){
       for(let i=0;i<b.length;i++) arr[i]=b.charCodeAt(i);
       blob=new Blob([arr],{type:currentImageMime});
     } else {
-      const r=await fetch(currentImageUrl,{mode:'cors'}); blob=await r.blob();
+      try{
+        const r=await fetch(currentImageUrl,{mode:'cors'}); blob=await r.blob();
+      } catch(corsErr){
+        // CORS blocked — send URL directly as form field instead
+        const form=new FormData();
+        form.append('inputs', currentImageUrl);
+        const resp=await fetch('https://api-inference.huggingface.co/models/Organika/sdxl-detector',{method:'POST',headers:{'Authorization':'Bearer '+apiKey},body:form});
+        if(!resp.ok) throw new Error('HF HTTP '+resp.status);
+        const data=await resp.json();
+        if(Array.isArray(data)){
+          const art=data.find(d=>/artif|ai|fake|gen|synth/i.test(d.label));
+          const real=data.find(d=>/real|human|photo|natural/i.test(d.label));
+          const aiScore=art?.score??(real?1-real.score:0.5);
+          return {ai_score:aiScore,label:aiScore>0.5?'AI_GENERATED':'REAL',raw:data,model:'sdxl-detector'};
+        }
+        throw new Error('Unexpected HF response');
+      }
     }
   } catch(e){ return { error:'Could not load image for HF: '+e.message, ai_score:0.5, label:'UNKNOWN' }; }
 
@@ -1333,9 +1349,11 @@ function handleNewsImage(e){
 async function verifyNews(){
   const keys = getKeys();
   if(!keys.gemini){ alert('Please add your Gemini API key in Settings'); return; }
-  const text = document.getElementById('newsTextInput').value.trim();
+const text = document.getElementById('newsTextInput').value.trim();
   const url = document.getElementById('newsUrlField').value.trim();
-  const content = text || url || 'a news screenshot';
+  const newsImgPreview = document.getElementById('newsImagePreview');
+  const isImageMode = newsImgPreview.style.display !== 'none' && newsImgPreview.src;
+  const content = text || url || (isImageMode ? 'the uploaded news screenshot' : 'unknown content');
   document.getElementById('newsLoader').style.display='block';
   document.getElementById('newsResult').style.display='none';
 
@@ -1356,9 +1374,15 @@ async function verifyNews(){
 Analyze it and respond ONLY in this JSON format (no markdown, no backticks):
 {"verdict":"VERIFIED" or "UNVERIFIED" or "DISPUTED" or "MISINFORMATION","confidence":0.0-1.0,"summary":"2-3 sentence analysis","red_flags":["flag1","flag2"],"recommended_sources":["Dawn.com","Geo News","BBC Urdu","Reuters","AP News"],"context":"relevant background"}`;
   try{
+   const newsParts = [{text:prompt}];
+    if(isImageMode && newsImgPreview.src.startsWith('data:')){
+      const mimeMatch = newsImgPreview.src.match(/data:(image\/\w+);base64,/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const b64 = newsImgPreview.src.split(',')[1];
+      newsParts.push({inlineData:{mimeType:mime, data:b64}});
+    }
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,
-      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
-    const data = await resp.json();
+      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:newsParts}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
     const t = data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
     const result = JSON.parse(t.replace(/```json|```/g,'').trim());
     showNewsResult(result);
@@ -1422,10 +1446,11 @@ async function exportPDF(){
   doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.text('API Results:',15,85);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); let y=93;
   const g=analysisResult.gemini, h=analysisResult.hf, s=analysisResult.se;
-  if(g&&!g.error){ doc.text(`• Gemini: ${g.verdict} (${Math.round((g.confidence||0)*100)}% confidence)`,15,y); y+=8; if(g.explanation){ const ln=doc.splitTextToSize('  '+g.explanation,180); doc.text(ln,15,y); y+=ln.length*6+4; } }
-  if(h&&!h.error){ doc.text(`• HuggingFace: ${h.label} (AI score: ${Math.round((h.ai_score||0)*100)}%)`,15,y); y+=8; }
-  if(s&&!s.error){ doc.text(`• Sightengine: ${s.label} (AI score: ${Math.round((s.ai_score||0)*100)}%)`,15,y); y+=8; }
-  if(g?.clues?.length){ y+=6; doc.setFont('helvetica','bold'); doc.text('Detected Clues:',15,y); y+=8; doc.setFont('helvetica','normal'); g.clues.forEach(c=>{ doc.text('• '+c,15,y); y+=7; }); }
+function checkY(doc,y,margin=20){ if(y>270){ doc.addPage(); return margin; } return y; }
+  if(g&&!g.error){ y=checkY(doc,y); doc.text(`• Gemini: ${g.verdict} (${Math.round((g.confidence||0)*100)}% confidence)`,15,y); y+=8; if(g.explanation){ const ln=doc.splitTextToSize('  '+g.explanation,180); y=checkY(doc,y); doc.text(ln,15,y); y+=ln.length*6+4; } }
+  if(h&&!h.error){ y=checkY(doc,y); doc.text(`• HuggingFace: ${h.label} (AI score: ${Math.round((h.ai_score||0)*100)}%)`,15,y); y+=8; }
+  if(s&&!s.error){ y=checkY(doc,y); doc.text(`• Sightengine: ${s.label} (AI score: ${Math.round((s.ai_score||0)*100)}%)`,15,y); y+=8; }
+  if(g?.clues?.length){ y+=6; y=checkY(doc,y); doc.setFont('helvetica','bold'); doc.text('Detected Clues:',15,y); y+=8; doc.setFont('helvetica','normal'); g.clues.forEach(c=>{ y=checkY(doc,y); doc.text('• '+c,15,y); y+=7; }); }
   doc.setFontSize(8); doc.setTextColor(150,150,150);
   doc.text('Generated by NeuralEye — AI Image & News Detection Platform | Verify before you share',15,285);
   doc.save('NeuralEye-Report-'+Date.now()+'.pdf');
@@ -1437,8 +1462,9 @@ async function exportPDF(){
 async function generateShareCard(){
   if(!analysisResult){ alert('Please analyze an image first'); return; }
   const sc=document.getElementById('shareCard'); sc.style.display='block';
-  const canvas=await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
+ const canvas=await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
   const a=document.createElement('a'); a.download='NeuralEye-Result.png'; a.href=canvas.toDataURL('image/png'); a.click();
+  sc.style.display='none';
 }
 function shareWhatsApp(){
   if(!analysisResult){ alert('Please analyze an image first'); return; }
@@ -1550,7 +1576,7 @@ function startNewsVoice(){
 
 function toggleGlobalVoice(){
   const btn=document.getElementById('voiceFab');
-  if(recognition?.running){ recognition.stop(); btn.classList.remove('listening'); return; }
+  if(isListening){ recognition.stop(); isListening=false; btn.classList.remove('listening'); return; }
   if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){ alert('Voice input requires Chrome browser'); return; }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   recognition=new SR(); recognition.lang=currentLang==='ur'?'ur-PK':'en-US'; recognition.interimResults=false; recognition.running=true;
@@ -1561,9 +1587,9 @@ function toggleGlobalVoice(){
     else if(active==='tab-news'){ document.getElementById('newsTextInput').value=t; }
     else if(active==='tab-askai'){ document.getElementById('askInput').value=t; }
   };
-  recognition.onend=()=>{ recognition.running=false; btn.classList.remove('listening'); };
-  recognition.onerror=()=>{ recognition.running=false; btn.classList.remove('listening'); };
-  recognition.start(); btn.classList.add('listening');
+recognition.onend=()=>{ isListening=false; btn.classList.remove('listening'); };
+  recognition.onerror=()=>{ isListening=false; btn.classList.remove('listening'); };
+  isListening=true; recognition.start(); btn.classList.add('listening');
 }
 document.getElementById('voiceSpeed')?.addEventListener('input',function(){
   document.getElementById('voiceSpeedLabel').textContent = parseFloat(this.value).toFixed(1)+'x';
@@ -1616,9 +1642,9 @@ function mdToHtml(text){
     .replace(/^### (.+)$/gm,'<h3>$1</h3>')
     .replace(/^## (.+)$/gm,'<h2>$1</h2>')
     .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-    // unordered list
+   // unordered list
     .replace(/^\s*[-*] (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/(<li>.*?<\/li>)(\n<li>.*?<\/li>)*/gs, match=>`<ul>${match}</ul>`)
     // ordered list
     .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
     // paragraphs
