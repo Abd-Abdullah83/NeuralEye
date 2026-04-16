@@ -1,0 +1,1655 @@
+html
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuralEye — AI Detection Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --bg-primary:#080b14;--bg-secondary:#0e1220;--bg-card:rgba(255,255,255,0.03);
+  --border:rgba(0,229,255,0.15);--accent:#00e5ff;--accent2:#7c3aed;--accent3:#f59e0b;
+  --text-primary:#e2e8f0;--text-secondary:#64748b;--text-muted:#334155;
+  --danger:#ef4444;--warning:#f59e0b;--success:#10b981;
+  --font-mono:'Space Mono',monospace;--font-sans:'DM Sans',sans-serif;
+  --radius:12px;--glow:0 0 20px rgba(0,229,255,0.3);--sidebar-w:260px;
+}
+[data-theme="light"]{
+  --bg-primary:#f0f4f8;--bg-secondary:#ffffff;--bg-card:rgba(0,0,0,0.03);
+  --border:rgba(0,100,150,0.2);--accent:#0284c7;--text-primary:#0f172a;
+  --text-secondary:#475569;--text-muted:#94a3b8;--glow:0 0 20px rgba(2,132,199,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-primary);color:var(--text-primary);min-height:100vh;display:flex;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 50%,rgba(0,229,255,0.04) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 20%,rgba(124,58,237,0.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:transform .3s ease;overflow-y:auto}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.sidebar-logo::after{content:'';position:absolute;top:-100%;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 3s infinite}
+@keyframes scan{0%{top:-10%}100%{top:110%}}
+.logo-text{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--accent);text-shadow:var(--glow);letter-spacing:2px}
+.logo-text span{color:var(--text-primary)}
+.logo-sub{font-size:.65rem;color:var(--text-secondary);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.sidebar-time{padding:12px 20px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.75rem;color:var(--text-secondary)}
+.sidebar-time .time{font-size:1.1rem;color:var(--accent)}
+.sidebar-nav{flex:1;padding:12px 0}
+.nav-section-label{font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);padding:12px 20px 6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;color:var(--text-secondary);font-size:.9rem;font-weight:500;transition:all .2s;border-left:3px solid transparent}
+.nav-item:hover{color:var(--text-primary);background:var(--bg-card)}
+.nav-item.active{color:var(--accent);background:rgba(0,229,255,0.06);border-left-color:var(--accent)}
+.nav-item i{width:18px;text-align:center;font-size:.9rem}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:.8rem;color:var(--text-secondary)}
+.toggle-pill{display:flex;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.toggle-pill button{border:none;background:none;color:var(--text-secondary);padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:var(--font-sans);transition:all .2s}
+.toggle-pill button.active{background:var(--accent);color:#000;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:28px;position:relative;z-index:1;min-height:100vh}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:28px}
+.page-header h1{font-family:var(--font-mono);font-size:1.6rem;color:var(--text-primary);letter-spacing:1px}
+.page-header h1 span{color:var(--accent)}
+.page-header p{color:var(--text-secondary);font-size:.9rem;margin-top:4px}
+
+/* CARDS */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;backdrop-filter:blur(10px)}
+.card-title{font-family:var(--font-mono);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:all .3s}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:var(--glow)}
+.upload-zone i{font-size:2.5rem;color:var(--accent);display:block;margin-bottom:12px;opacity:.7}
+.upload-zone h3{font-size:1rem;margin-bottom:6px}
+.upload-zone p{font-size:.8rem;color:var(--text-secondary)}
+.upload-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.upload-tab{padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text-secondary);font-size:.8rem;cursor:pointer;font-family:var(--font-sans);transition:all .2s}
+.upload-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;border:none;font-family:var(--font-sans);font-size:.875rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{opacity:.85;box-shadow:var(--glow);transform:translateY(-1px)}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:6px 14px;font-size:.8rem}
+
+/* INPUTS */
+.input-field{width:100%;padding:12px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:var(--font-sans);font-size:.875rem;outline:none;transition:border-color .2s}
+.input-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1)}
+
+/* IMAGE PREVIEW */
+#imagePreview{max-width:100%;max-height:300px;border-radius:var(--radius);border:1px solid var(--border);object-fit:contain;display:none;margin:16px auto;display:none}
+
+/* LOADING */
+.loading-bar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:2px}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.status-dot.loading{background:var(--warning);animation:blink .8s infinite}
+.status-dot.done{background:var(--success)}
+.status-dot.error{background:var(--danger)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* VERDICT */
+.final-verdict{text-align:center;padding:32px;border-radius:var(--radius);border:2px solid var(--border);margin:20px 0;position:relative;overflow:hidden;transition:all .5s}
+.final-verdict.ai-gen{border-color:var(--danger);background:rgba(239,68,68,0.06)}
+.final-verdict.real{border-color:var(--success);background:rgba(16,185,129,0.06)}
+.final-verdict.deepfake{border-color:var(--warning);background:rgba(245,158,11,0.06)}
+.verdict-icon{font-size:3rem;display:block;margin-bottom:12px}
+.verdict-label{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;letter-spacing:2px}
+.verdict-confidence{font-size:.85rem;color:var(--text-secondary);margin-top:6px}
+.verdict-ai{color:var(--danger)}
+.verdict-real{color:var(--success)}
+.verdict-unknown{color:var(--warning)}
+
+/* THREAT METER */
+.threat-track{height:8px;background:var(--bg-secondary);border-radius:4px;overflow:hidden;margin:8px 0}
+.threat-fill{height:100%;border-radius:4px;transition:width 1.2s ease;background:linear-gradient(90deg,var(--success),var(--warning),var(--danger))}
+.threat-labels{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)}
+
+/* CLUES */
+.clue-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:20px;font-size:.75rem;color:#ef4444;margin:3px}
+
+/* PROGRESS BAR */
+.progress-bar{height:6px;background:var(--bg-secondary);border-radius:3px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1.2s ease}
+
+/* CHART */
+.chart-container{position:relative;height:250px;width:100%}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2))}
+.timeline-item{position:relative;padding:0 0 24px 20px}
+.timeline-item::before{content:'';position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg-primary)}
+.timeline-year{font-family:var(--font-mono);font-size:.7rem;color:var(--accent);letter-spacing:2px}
+.timeline-title{font-weight:600;font-size:.9rem;margin:2px 0}
+.timeline-desc{font-size:.8rem;color:var(--text-secondary);line-height:1.6}
+.timeline-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;margin-top:4px;font-weight:600}
+.tag-pk{background:rgba(0,229,255,0.1);color:var(--accent)}
+.tag-global{background:rgba(124,58,237,0.1);color:#a78bfa}
+
+/* FACT CARD */
+.fact-card{background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(124,58,237,0.08));border:1px solid rgba(0,229,255,0.2);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden}
+.fact-card::before{content:'"';position:absolute;right:20px;top:-10px;font-size:5rem;color:var(--accent);opacity:.1;font-family:Georgia,serif}
+
+/* STAT CARD */
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.stat-value{font-family:var(--font-mono);font-size:1.8rem;color:var(--accent)}
+.stat-label{font-size:.75rem;color:var(--text-secondary);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+
+/* PLEDGE */
+.pledge-counter{text-align:center;padding:16px}
+.pledge-number{font-family:var(--font-mono);font-size:3rem;color:var(--accent);text-shadow:var(--glow)}
+.pledgers-list{max-height:200px;overflow-y:auto;margin-top:16px}
+.pledger-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-secondary)}
+.pledger-item i{color:var(--accent);font-size:.7rem}
+
+/* ACCORDION */
+.accordion-item{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.accordion-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:.9rem;background:var(--bg-card);transition:all .2s}
+.accordion-header:hover{background:rgba(0,229,255,0.04)}
+.accordion-header i{transition:transform .3s}
+.accordion-body{padding:0 18px;max-height:0;overflow:hidden;transition:all .3s;font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.accordion-body.open{max-height:400px;padding:14px 18px}
+
+/* TIPS */
+.tip-card{display:flex;gap:14px;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
+.tip-icon{font-size:1.2rem;width:32px;text-align:center;flex-shrink:0;color:var(--accent)}
+.tip-text h4{font-size:.85rem;font-weight:600;margin-bottom:2px}
+.tip-text p{font-size:.8rem;color:var(--text-secondary)}
+
+/* SOURCE CHIP */
+.source-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:12px;font-size:.7rem;color:var(--accent);margin:3px}
+
+/* SETTINGS */
+.api-key-field{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.api-key-label{font-family:var(--font-mono);font-size:.75rem;color:var(--accent);min-width:130px;flex-shrink:0}
+.settings-label{font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.color-swatches{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;transition:transform .2s;border:2px solid transparent}
+.swatch:hover,.swatch.active{transform:scale(1.2);border-color:white}
+
+/* SHARE CARD */
+#shareCard{background:linear-gradient(135deg,#080b14,#0e1220);border:1px solid rgba(0,229,255,0.3);border-radius:16px;padding:24px;text-align:center;display:none;margin-top:16px}
+
+/* ACTION BUTTONS */
+.action-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+/* QUIZ */
+.quiz-card{text-align:center;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px}
+.quiz-buttons{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+
+/* LOADER */
+#analysisLoader{display:none;text-align:center;padding:40px}
+.analysis-steps{list-style:none;text-align:left;display:inline-block;margin-top:16px}
+.analysis-step{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.85rem;color:var(--text-secondary)}
+.analysis-step.done{color:var(--success)}
+.analysis-step.active{color:var(--accent)}
+
+/* VOICE FAB */
+.voice-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--accent2);border:none;color:white;font-size:1.1rem;cursor:pointer;z-index:200;transition:all .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,58,237,0.4)}
+.voice-fab:hover{transform:scale(1.1)}
+.voice-fab.listening{background:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
+
+/* MOBILE */
+.mobile-menu-btn{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;color:var(--accent);font-size:1rem;align-items:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+
+.badge-new{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-left:6px;animation:blink 2s infinite}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg-primary)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* CHAT BUBBLES */
+.chat-bubble{border-radius:var(--radius);padding:16px 18px;font-size:.875rem;line-height:1.75;position:relative;max-width:100%}
+.chat-bubble.user{background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.2);border-left:3px solid var(--accent)}
+.chat-bubble.ai{background:var(--bg-card);border:1px solid var(--border)}
+.chat-bubble .bubble-label{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.chat-bubble.user .bubble-label{color:var(--accent)}
+.chat-bubble.ai .bubble-label{color:var(--text-muted)}
+.chat-bubble .bubble-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+.bubble-text h1,.bubble-text h2,.bubble-text h3{font-size:.95rem;font-weight:700;margin:10px 0 4px;color:var(--text-primary)}
+.bubble-text strong{color:var(--text-primary)}
+.bubble-text ul,.bubble-text ol{padding-left:20px;margin:6px 0}
+.bubble-text li{margin-bottom:4px}
+.bubble-text code{background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:.8rem}
+.bubble-text pre{background:var(--bg-secondary);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
+.bubble-text pre code{background:none;padding:0}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.show{display:block}
+  .mobile-menu-btn{display:flex}
+  .main{margin-left:0;padding:16px;padding-top:60px}
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  .quiz-buttons{flex-direction:column}
+  .action-buttons{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">Neural<span>Eye</span></div>
+    <div class="logo-sub">AI Detection Platform</div>
+  </div>
+  <div class="sidebar-time">
+    <div class="time" id="clockDisplay">--:--:--</div>
+    <div id="dateDisplay">Loading...</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" data-tab="home" onclick="switchTab('home',this)"><i class="fas fa-home"></i> Home</div>
+    <div class="nav-item" data-tab="analyze" onclick="switchTab('analyze',this)"><i class="fas fa-search"></i> Image Analyzer <span class="badge-new"></span></div>
+    <div class="nav-item" data-tab="news" onclick="switchTab('news',this)"><i class="fas fa-newspaper"></i> News Checker</div>
+    <div class="nav-item" data-tab="askai" onclick="switchTab('askai',this)"><i class="fas fa-comments"></i> Ask AI <span class="badge-new"></span></div>
+    <div class="nav-section-label">Learn</div>
+    <div class="nav-item" data-tab="education" onclick="switchTab('education',this)"><i class="fas fa-graduation-cap"></i> Education</div>
+    <div class="nav-item" data-tab="timeline" onclick="switchTab('timeline',this)"><i class="fas fa-clock-rotate-left"></i> Timeline</div>
+    <div class="nav-section-label">Engage</div>
+    <div class="nav-item" data-tab="pledge" onclick="switchTab('pledge',this)"><i class="fas fa-handshake"></i> Digital Pledge</div>
+    <div class="nav-section-label">System</div>
+    <div class="nav-item" data-tab="settings" onclick="switchTab('settings',this)"><i class="fas fa-cog"></i> Settings & APIs</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="toggle-row">
+      <span><i class="fas fa-language" style="margin-right:6px"></i>Language</span>
+      <div class="toggle-pill">
+        <button id="btnEN" class="active" onclick="setLang('en')">EN</button>
+        <button id="btnUR" onclick="setLang('ur')">اردو</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span><i class="fas fa-circle-half-stroke" style="margin-right:6px"></i>Theme</span>
+      <div class="toggle-pill">
+        <button id="btnDark" class="active" onclick="setTheme('dark')">Dark</button>
+        <button id="btnLight" onclick="setTheme('light')">Light</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- HOME TAB -->
+<div class="tab-content active" id="tab-home">
+  <div class="page-header">
+    <h1>Welcome to <span>NeuralEye</span></h1>
+    <p id="homeSubtitle">Your AI-powered digital truth detector</p>
+  </div>
+  <div class="fact-card" style="margin-bottom:24px">
+    <div class="card-title"><i class="fas fa-lightbulb"></i> Fact of the Day</div>
+    <p id="factOfDay" style="font-size:.95rem;line-height:1.7"></p>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px" id="factSource"></p>
+  </div>
+  <div class="grid-3" style="margin-bottom:24px">
+    <div class="stat-card"><div class="stat-value" id="statAnalyzed">0</div><div class="stat-label">Images Analyzed</div></div>
+    <div class="stat-card"><div class="stat-value" id="statPledges">—</div><div class="stat-label">Pledges Made</div></div>
+    <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Detection APIs</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="switchTab('analyze')"><i class="fas fa-image"></i> Analyze Image</button>
+      <button class="btn btn-outline" onclick="switchTab('news')"><i class="fas fa-newspaper"></i> Verify News</button>
+      <button class="btn btn-outline" onclick="switchTab('pledge')"><i class="fas fa-handshake"></i> Take Pledge</button>
+      <button class="btn btn-outline" onclick="switchTab('education')"><i class="fas fa-book"></i> Learn</button>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-shield-halved"></i> How It Works</div>
+      <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.9">
+        <div>🔍 <strong>Upload</strong> any image (drag & drop, file, or URL)</div>
+        <div>⚡ <strong>3 AIs analyze</strong> it simultaneously in seconds</div>
+        <div>📊 <strong>Confidence chart</strong> shows each detector's score</div>
+        <div>🎓 <strong>Learn</strong> which visual clues gave it away</div>
+        <div>📤 <strong>Export</strong> a full PDF report or share card</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-triangle-exclamation"></i> Why It Matters</div>
+      <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.9">
+        <div>🇵🇰 Deepfakes used in <strong>election misinformation</strong></div>
+        <div>📱 Fake images spread on <strong>WhatsApp daily</strong></div>
+        <div>🧠 96% of deepfakes target <strong>non-consenting women</strong></div>
+        <div>⚖️ Pakistan's PECA criminalizes <strong>digital defamation</strong></div>
+        <div>✅ Verification takes <strong>seconds</strong> — share responsibly</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYZE TAB -->
+<div class="tab-content" id="tab-analyze">
+  <div class="page-header">
+    <h1><span>Image</span> Analyzer</h1>
+    <p>Upload an image and 3 AI engines will determine if it's real or generated</p>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-upload"></i> Upload Image</div>
+    <div class="upload-tabs">
+      <button class="upload-tab active" onclick="setUploadMode('drag',this)"><i class="fas fa-hand-pointer"></i> Drag & Drop</button>
+      <button class="upload-tab" onclick="setUploadMode('url',this)"><i class="fas fa-link"></i> Image URL</button>
+      <button class="upload-tab" onclick="setUploadMode('file',this)"><i class="fas fa-folder-open"></i> Browse File</button>
+    </div>
+    <div id="uploadDrag">
+      <div class="upload-zone" id="dropZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-cloud-arrow-up"></i>
+        <h3>Drop image here or click to browse</h3>
+        <p>PNG, JPG, WEBP supported • Max 10MB</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" style="display:none">
+    </div>
+    <div id="uploadUrl" style="display:none">
+      <div style="display:flex;gap:8px">
+        <input class="input-field" id="imageUrlInput" placeholder="https://example.com/image.jpg" type="url">
+        <button class="btn btn-primary" onclick="loadFromUrl()"><i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+    <div id="uploadFile" style="display:none">
+      <label class="btn btn-primary" style="cursor:pointer" for="fileInputBtn"><i class="fas fa-folder-open"></i> Choose File</label>
+      <input type="file" id="fileInputBtn" accept="image/*" onchange="handleFileSelect(event)" style="display:none">
+    </div>
+    <div style="text-align:center">
+      <img id="imagePreview" alt="Preview" style="max-width:100%;max-height:300px;border-radius:var(--radius);border:1px solid var(--border);object-fit:contain;display:none;margin:16px auto">
+    </div>
+    <div id="previewActions" style="display:none;text-align:center;margin-top:8px">
+      <span style="font-size:.8rem;color:var(--text-secondary)" id="previewFilename"></span>
+      <button class="btn btn-outline btn-sm" style="margin-left:10px" onclick="clearImage()"><i class="fas fa-times"></i> Clear</button>
+    </div>
+  </div>
+
+  <div class="quiz-card" id="quizSection" style="display:none">
+    <div style="font-size:.8rem;color:var(--text-secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Before we analyze...</div>
+    <h3 style="font-size:1rem">What do YOU think about this image?</h3>
+    <p style="font-size:.8rem;color:var(--text-secondary);margin-top:4px">Test your instinct before the AI reveals its verdict</p>
+    <div class="quiz-buttons">
+      <button class="btn btn-outline" onclick="recordGuess('real',this)">📷 Real Photo</button>
+      <button class="btn btn-outline" onclick="recordGuess('ai',this)">🤖 AI Generated</button>
+      <button class="btn btn-outline" onclick="recordGuess('deepfake',this)">👤 Deepfake</button>
+      <button class="btn btn-primary" onclick="startAnalysis()"><i class="fas fa-bolt"></i> Skip & Analyze</button>
+    </div>
+  </div>
+
+  <div id="analysisLoader">
+    <div class="loading-bar" style="margin-bottom:20px"></div>
+    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.9rem;margin-bottom:8px">ANALYZING IMAGE...</div>
+    <ul class="analysis-steps">
+      <li class="analysis-step active" id="step1"><span class="status-dot loading"></span> Sending to Gemini AI...</li>
+      <li class="analysis-step" id="step2"><span class="status-dot loading"></span> Querying HuggingFace...</li>
+      <li class="analysis-step" id="step3"><span class="status-dot loading"></span> Checking Sightengine...</li>
+      <li class="analysis-step" id="step4"><span class="status-dot loading"></span> Computing combined verdict...</li>
+    </ul>
+  </div>
+
+  <div id="resultsSection" style="display:none">
+    <div id="finalVerdictCard" class="final-verdict">
+      <span class="verdict-icon" id="verdictIcon">🔍</span>
+      <div class="verdict-label" id="verdictLabel">ANALYZING...</div>
+      <div class="verdict-confidence" id="verdictConfidence"></div>
+      <div id="userGuessResult" style="margin-top:12px;font-size:.85rem;display:none"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fas fa-gauge-high"></i> Threat Level</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:.8rem;color:var(--text-secondary)">Danger to public trust if shared</span>
+        <span style="font-family:var(--font-mono);font-size:.8rem;color:var(--accent)" id="threatPercent">0%</span>
+      </div>
+      <div class="threat-track"><div class="threat-fill" id="threatFill" style="width:0%"></div></div>
+      <div class="threat-labels"><span>Low</span><span>Medium</span><span>High</span><span>Critical</span></div>
+      <div id="threatDescription" style="font-size:.8rem;color:var(--text-secondary);margin-top:10px;padding:10px;background:var(--bg-secondary);border-radius:6px"></div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-title"><i class="fab fa-google"></i> Gemini</div>
+        <div id="geminiResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="geminiScore" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-robot"></i> HuggingFace</div>
+        <div id="hfResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="hfScore" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-eye"></i> Sightengine</div>
+        <div id="seResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="seScore" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-chart-bar"></i> Confidence Chart</div>
+        <div class="chart-container"><canvas id="confidenceChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-magnifying-glass"></i> Detected Clues</div>
+        <div id="cluesContainer"><p style="font-size:.8rem;color:var(--text-secondary)">Clues will appear after analysis</p></div>
+        <div id="geminiExplanation" style="font-size:.82rem;color:var(--text-secondary);margin-top:12px;line-height:1.7;border-top:1px solid var(--border);padding-top:12px"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fas fa-share-nodes"></i> Export & Share</div>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+        <button class="btn btn-outline" onclick="generateShareCard()"><i class="fas fa-image"></i> Share Card</button>
+        <button class="btn btn-outline" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn btn-outline" onclick="copyResult()"><i class="fas fa-copy"></i> Copy</button>
+        <button class="btn btn-outline" onclick="analyzeAnother()"><i class="fas fa-redo"></i> Analyze Another</button>
+      </div>
+      <div id="shareCard">
+        <div style="font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:3px;color:#00e5ff;margin-bottom:8px">NEURALEYE DETECTION REPORT</div>
+        <div id="shareCardIcon" style="font-size:2.5rem"></div>
+        <div id="shareCardVerdict" style="font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:#e2e8f0;margin:8px 0"></div>
+        <div id="shareCardConf" style="font-size:.8rem;color:#64748b"></div>
+        <div style="margin-top:10px;font-size:.7rem;color:#334155">Verify before you share • NeuralEye AI Detection</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS TAB -->
+<div class="tab-content" id="tab-news">
+  <div class="page-header">
+    <h1><span>News</span> Verifier</h1>
+    <p>Check if a news headline, article, or screenshot is verified or misinformation</p>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-magnifying-glass-arrow-right"></i> Enter News to Verify</div>
+    <div class="upload-tabs">
+      <button class="upload-tab active" onclick="setNewsMode('headline',this)"><i class="fas fa-heading"></i> Headline / Text</button>
+      <button class="upload-tab" onclick="setNewsMode('url',this)"><i class="fas fa-link"></i> Article URL</button>
+      <button class="upload-tab" onclick="setNewsMode('image',this)"><i class="fas fa-image"></i> Screenshot</button>
+    </div>
+    <div id="newsHeadlineInput"><textarea class="input-field" id="newsTextInput" rows="3" placeholder="Paste news headline or article text here..." style="resize:vertical"></textarea></div>
+    <div id="newsUrlInput" style="display:none"><input class="input-field" id="newsUrlField" placeholder="https://news-article-url.com/..." type="url"></div>
+    <div id="newsImageInput" style="display:none">
+      <div class="upload-zone" onclick="document.getElementById('newsImageFile').click()" style="padding:24px">
+        <i class="fas fa-image" style="font-size:1.5rem"></i><p>Click to upload news screenshot</p>
+      </div>
+      <input type="file" id="newsImageFile" accept="image/*" style="display:none" onchange="handleNewsImage(event)">
+      <img id="newsImagePreview" style="max-width:100%;max-height:200px;display:none;margin-top:10px;border-radius:8px">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="verifyNews()"><i class="fas fa-search"></i> Verify Now</button>
+      <button class="btn btn-outline" id="newsVoiceBtn" onclick="startNewsVoice()"><i class="fas fa-microphone"></i> Voice Input</button>
+    </div>
+  </div>
+  <div id="newsLoader" style="display:none;text-align:center;padding:32px">
+    <div class="loading-bar" style="margin-bottom:16px"></div>
+    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.85rem">CROSS-REFERENCING SOURCES...</div>
+  </div>
+  <div id="newsResult" style="display:none">
+    <div id="newsVerdictCard" class="final-verdict" style="margin-bottom:20px">
+      <span class="verdict-icon" id="newsVerdictIcon">📰</span>
+      <div class="verdict-label" id="newsVerdictLabel">CHECKING...</div>
+      <div class="verdict-confidence" id="newsVerdictDetail"></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><i class="fas fa-list-check"></i> Analysis Details</div>
+      <div id="newsAnalysisText" style="font-size:.875rem;color:var(--text-secondary);line-height:1.8"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-external-link-alt"></i> Recommended Sources to Verify</div>
+      <div id="newsSources"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDUCATION TAB -->
+<div class="tab-content" id="tab-education">
+  <div class="page-header"><h1><span>Education</span> Hub</h1><p>Learn about deepfakes, AI-generated media, and how to protect yourself</p></div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-brain"></i> What Are Deepfakes?</div>
+    <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.8;margin-bottom:16px">Deepfakes are synthetic media created using artificial intelligence — particularly <strong>deep learning</strong> algorithms — that manipulate or generate images, videos, and audio to portray real people doing or saying things they never did. The term combines "deep learning" and "fake."</p>
+    <div class="grid-2">
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:14px">
+        <div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:var(--accent)">🎭 How They're Made</div>
+        <div style="font-size:.8rem;color:var(--text-secondary);line-height:1.9">
+          <div>• GANs (Generative Adversarial Networks)</div>
+          <div>• Diffusion models (Stable Diffusion, Midjourney)</div>
+          <div>• Face-swap algorithms (DeepFaceLab)</div>
+          <div>• Text-to-image AI (DALL-E, Firefly, Grok)</div>
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:14px">
+        <div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:var(--danger)">👁️ How to Spot Them</div>
+        <div style="font-size:.8rem;color:var(--text-secondary);line-height:1.9">
+          <div>• Unnatural eye blinking or gaze</div>
+          <div>• Distorted hands or extra fingers</div>
+          <div>• Blurry edges around face/hair</div>
+          <div>• Inconsistent lighting on face</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;border-color:rgba(0,229,255,0.3)">
+    <div class="card-title"><i class="fas fa-flag"></i> Pakistan Context</div>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)"><span>🗳️ Election Misinformation</span><i class="fas fa-chevron-down"></i></div>
+      <div class="accordion-body">During Pakistan's 2024 general elections, multiple deepfake videos and AI-generated images of political leaders circulated on WhatsApp and X/Twitter, falsely showing them making statements they never made. These were used to manipulate voter opinion just days before polling, making digital literacy a matter of democratic importance.</div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)"><span>📱 WhatsApp Fake News Crisis</span><i class="fas fa-chevron-down"></i></div>
+      <div class="accordion-body">Pakistan has one of the highest WhatsApp usage rates in Asia with over 50 million users. Fake images of accidents, protests, floods, and political events frequently go viral before any verification, causing mass panic and public unrest. Research shows most forwarded content is shared without any fact-checking.</div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)"><span>🎙️ Audio Deepfakes in Pakistani Media</span><i class="fas fa-chevron-down"></i></div>
+      <div class="accordion-body">Pakistani news cycles have been disrupted by AI-cloned voices of politicians and public figures. Fake audio clips claiming to be leaked private conversations have been used for blackmail and political attacks. The technology to clone a voice now requires as little as 3 seconds of sample audio.</div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)"><span>⚖️ Legal Situation in Pakistan</span><i class="fas fa-chevron-down"></i></div>
+      <div class="accordion-body">Pakistan's PECA (Prevention of Electronic Crimes Act) 2016 criminalizes online defamation and the spread of fake news, with penalties up to 3 years imprisonment. The FIA Cybercrime Wing handles complaints. However, deepfake-specific legislation is still being drafted and enforcement remains limited due to technical capacity gaps.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fas fa-shield-halved"></i> How to Protect Yourself Online</div>
+    <div class="tip-card"><div class="tip-icon">🔍</div><div class="tip-text"><h4>Reverse Image Search</h4><p>Right-click any suspicious image → "Search image on Google" to find the original source and date</p></div></div>
+    <div class="tip-card"><div class="tip-icon">📅</div><div class="tip-text"><h4>Check the Date & Context</h4><p>Old images are often reshared out of context. Verify when and where the image was first published</p></div></div>
+    <div class="tip-card"><div class="tip-icon">🏛️</div><div class="tip-text"><h4>Trust Verified Sources</h4><p>For Pakistan news, verify at Dawn, Geo, ARY, BBC Urdu, or official government portals first</p></div></div>
+    <div class="tip-card"><div class="tip-icon">👁️</div><div class="tip-text"><h4>Inspect Hands & Eyes</h4><p>AI often gets hands wrong (extra fingers) and eyes look glassy, asymmetric, or have strange reflections</p></div></div>
+    <div class="tip-card"><div class="tip-icon">⏸️</div><div class="tip-text"><h4>Pause Before Sharing</h4><p>Ask: Is this from a source I trust? Does this seem too outrageous? If in doubt — don't share it out</p></div></div>
+    <div class="tip-card"><div class="tip-icon">🔧</div><div class="tip-text"><h4>Use Detection Tools</h4><p>Tools like NeuralEye, Google Fact Check, and InVID browser extension can verify suspicious content</p></div></div>
+  </div>
+</div>
+
+<!-- TIMELINE TAB -->
+<div class="tab-content" id="tab-timeline">
+  <div class="page-header"><h1>Misinformation <span>Timeline</span></h1><p>Key deepfake and AI-media incidents globally and in Pakistan</p></div>
+  <div class="card">
+    <div class="timeline" style="padding-top:8px">
+      <div class="timeline-item">
+        <div class="timeline-year">2017</div>
+        <div class="timeline-title">First Public Deepfake Videos</div>
+        <div class="timeline-desc">Reddit user "deepfakes" posts face-swap videos using AI — marking the public debut of the term and technology.</div>
+        <span class="timeline-tag tag-global">Global</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2019</div>
+        <div class="timeline-title">Gabon Presidential Deepfake</div>
+        <div class="timeline-desc">A disputed video of President Ali Bongo sparks a constitutional crisis — one of the first political deepfake incidents.</div>
+        <span class="timeline-tag tag-global">Global</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-title">Pakistan — COVID Misinformation Wave</div>
+        <div class="timeline-desc">Fake images of hospitals, mass graves, and politicians "admitting" to cover-ups went viral on Pakistani WhatsApp groups during the pandemic.</div>
+        <span class="timeline-tag tag-pk">🇵🇰 Pakistan</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2022</div>
+        <div class="timeline-title">Ukraine War Deepfakes</div>
+        <div class="timeline-desc">Deepfake video of President Zelenskyy "ordering surrender" spread on social media during the Russia-Ukraine conflict — debunked within hours.</div>
+        <span class="timeline-tag tag-global">Global</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2023</div>
+        <div class="timeline-title">Pakistan — PTI AI Speeches</div>
+        <div class="timeline-desc">AI-generated speeches attributed to PTI leadership circulated during Pakistan's political crisis, blurring lines between real and fabricated positions.</div>
+        <span class="timeline-tag tag-pk">🇵🇰 Pakistan</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2024</div>
+        <div class="timeline-title">Pakistan Elections — Deepfake Campaign</div>
+        <div class="timeline-desc">Multiple AI-generated videos of political figures making inflammatory statements circulated days before the February 2024 general elections, impacting voter sentiment.</div>
+        <span class="timeline-tag tag-pk">🇵🇰 Pakistan</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2024</div>
+        <div class="timeline-title">Taylor Swift AI Images Scandal</div>
+        <div class="timeline-desc">Non-consensual explicit AI images of Taylor Swift spread globally, leading to platform bans and urgent calls for deepfake legislation in the US.</div>
+        <span class="timeline-tag tag-global">Global</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2025</div>
+        <div class="timeline-title">AI Video Becomes Mainstream</div>
+        <div class="timeline-desc">Tools like Sora and Kling make hyperrealistic AI video accessible to anyone, making video deepfake detection a critical global challenge requiring tools like NeuralEye.</div>
+        <span class="timeline-tag tag-global">Global</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLEDGE TAB -->
+<div class="tab-content" id="tab-pledge">
+  <div class="page-header"><h1>Digital <span>Pledge</span></h1><p>Commit to responsible digital citizenship</p></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-pen-to-square"></i> Sign the Pledge</div>
+      <div style="background:var(--bg-secondary);border-left:3px solid var(--accent);padding:16px;border-radius:0 8px 8px 0;font-style:italic;font-size:.9rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.8">
+        "I pledge to <strong style="color:var(--text-primary)">verify before I share</strong>. I will not spread unverified images, videos, or news. I commit to being a responsible digital citizen who protects others from misinformation."
+      </div>
+      <input class="input-field" id="pledgeName" placeholder="Your name" style="margin-bottom:10px">
+      <input class="input-field" id="pledgeCity" placeholder="Your city (optional)" style="margin-bottom:16px">
+      <button class="btn btn-primary" onclick="submitPledge()" style="width:100%"><i class="fas fa-handshake"></i> I Take This Pledge</button>
+      <div id="pledgeMsg" style="margin-top:10px;font-size:.85rem;text-align:center"></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title"><i class="fas fa-users"></i> Total Pledgers</div>
+        <div class="pledge-counter">
+          <div class="pledge-number" id="pledgeCount">0</div>
+          <div style="font-size:.75rem;color:var(--text-secondary);margin-top:4px">people have pledged to verify before sharing</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-list"></i> Recent Pledgers</div>
+        <div class="pledgers-list" id="pledgersList"><div style="font-size:.8rem;color:var(--text-muted)">Be the first to pledge!</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div class="tab-content" id="tab-settings">
+  <div class="page-header"><h1><span>Settings</span> & APIs</h1><p>Configure your API keys and personalize NeuralEye</p></div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-key"></i> API Keys</div>
+    <p style="font-size:.8rem;color:var(--text-secondary);margin-bottom:16px">🔒 Your keys are saved only in your browser. Never sent to any server.</p>
+    <div class="api-key-field">
+      <span class="api-key-label">Gemini</span>
+      <input class="input-field" id="keyGemini" type="password" placeholder="AIza...">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keyGemini')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">HuggingFace</span>
+      <input class="input-field" id="keyHF" type="password" placeholder="hf_...">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keyHF')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">Sightengine User</span>
+      <input class="input-field" id="keySEUser" type="password" placeholder="API user ID">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keySEUser')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">Sightengine Secret</span>
+      <input class="input-field" id="keySESecret" type="password" placeholder="API secret">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keySESecret')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">JSONBin Key</span>
+      <input class="input-field" id="keyJSONBin" type="password" placeholder="$2a$...">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keyJSONBin')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">JSONBin BIN ID</span>
+      <input class="input-field" id="keyBinID" type="text" placeholder="paste bin ID here">
+    </div>
+    <div class="api-key-field">
+      <span class="api-key-label">NewsAPI Key</span>
+      <input class="input-field" id="keyNews" type="password" placeholder="newsapi.org key">
+      <button class="btn btn-outline btn-sm" onclick="toggleKeyVis('keyNews')"><i class="fas fa-eye"></i></button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-primary" onclick="saveKeys()"><i class="fas fa-save"></i> Save Keys</button>
+      <button class="btn btn-outline" onclick="clearKeys()"><i class="fas fa-trash"></i> Clear All</button>
+    </div>
+    <div id="keysSavedMsg" style="font-size:.8rem;margin-top:8px"></div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-palette"></i> Theme & Accent Color</div>
+    <div class="settings-label">MODE</div>
+    <div class="toggle-pill" style="width:fit-content;margin-bottom:16px">
+      <button id="settingDark" class="active" onclick="setTheme('dark')">🌙 Dark</button>
+      <button id="settingLight" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+    <div class="settings-label">ACCENT COLOR</div>
+    <div class="color-swatches">
+      <div class="swatch active" style="background:#00e5ff" onclick="setAccent('#00e5ff')" title="Cyan"></div>
+      <div class="swatch" style="background:#7c3aed" onclick="setAccent('#7c3aed')" title="Purple"></div>
+      <div class="swatch" style="background:#10b981" onclick="setAccent('#10b981')" title="Green"></div>
+      <div class="swatch" style="background:#f59e0b" onclick="setAccent('#f59e0b')" title="Amber"></div>
+      <div class="swatch" style="background:#ef4444" onclick="setAccent('#ef4444')" title="Red"></div>
+      <div class="swatch" style="background:#ec4899" onclick="setAccent('#ec4899')" title="Pink"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <span style="font-size:.8rem;color:var(--text-secondary)">Custom:</span>
+      <input type="color" id="customColor" value="#00e5ff" onchange="setAccent(this.value)" style="width:40px;height:32px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;padding:2px">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fas fa-microphone"></i> Voice Settings</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--border)">
+        <div>
+          <div style="font-size:.875rem;font-weight:600">Voice Readout</div>
+          <div style="font-size:.75rem;color:var(--text-secondary);margin-top:2px">Speak analysis results aloud</div>
+        </div>
+        <button id="voiceToggleBtn" onclick="toggleVoiceOutput()" style="display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;background:var(--success);color:#fff;box-shadow:0 0 12px rgba(16,185,129,0.35)">
+          <i class="fas fa-volume-up"></i> ON
+        </button>
+      </div>
+      <div>
+        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:6px">Speaking speed</div>
+        <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1" style="accent-color:var(--accent);width:200px">
+        <span style="font-size:.75rem;color:var(--text-muted);margin-left:8px" id="voiceSpeedLabel">1.0x</span>
+      </div>
+    </div>
+  </div>
+  <!-- hidden checkbox kept for JS compatibility -->
+  <input type="checkbox" id="voiceOutputEnabled" checked style="display:none">
+
+</div><!-- END settings tab -->
+
+<!-- ASK AI TAB -->
+<div class="tab-content" id="tab-askai">
+  <div class="page-header">
+    <h1>Ask <span>AI</span></h1>
+    <p>Ask anything — education, science, health, daily life, or just curiosity</p>
+  </div>
+
+  <!-- Quick topic chips -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+    <button class="upload-tab" onclick="setAskTopic('Explain this like I\'m 15: ')">📚 Education</button>
+    <button class="upload-tab" onclick="setAskTopic('Health question: ')">🏥 Health</button>
+    <button class="upload-tab" onclick="setAskTopic('Science question: ')">🔬 Science</button>
+    <button class="upload-tab" onclick="setAskTopic('Tech help: ')">💻 Tech</button>
+    <button class="upload-tab" onclick="setAskTopic('Pakistan current affairs: ')">🇵🇰 Pakistan</button>
+    <button class="upload-tab" onclick="setAskTopic('Career advice: ')">🎯 Career</button>
+    <button class="upload-tab" onclick="setAskTopic('Math problem: ')">➗ Math</button>
+    <button class="upload-tab" onclick="setAskTopic('')">✏️ Custom</button>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-keyboard"></i> Your Question</div>
+    <textarea class="input-field" id="askInput" rows="4" placeholder="Type anything you want to know... e.g. 'What causes inflation?' or 'How do vaccines work?' or 'Explain Newton\'s laws simply'" style="resize:vertical;margin-bottom:12px"></textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="askAI()"><i class="fas fa-paper-plane"></i> Ask Now</button>
+      <button class="btn btn-outline" onclick="toggleGlobalVoice()"><i class="fas fa-microphone"></i> Voice Input</button>
+      <button class="btn btn-outline" onclick="clearAskAI()"><i class="fas fa-broom"></i> Clear Chat</button>
+    </div>
+  </div>
+
+  <div id="askLoader" style="display:none;text-align:center;padding:32px">
+    <div class="loading-bar" style="margin-bottom:16px"></div>
+    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.85rem">AI IS THINKING...</div>
+  </div>
+
+  <div id="askChatHistory" style="display:flex;flex-direction:column;gap:14px"></div>
+</div>
+
+</main>
+
+<!-- Voice FAB -->
+<button class="voice-fab" id="voiceFab" onclick="toggleGlobalVoice()" title="Voice Input">
+  <i class="fas fa-microphone"></i>
+</button>
+
+<script>
+// ============================================================
+// VERSION 1 — HARDCODED API KEYS (fill in before deploying)
+// If you use Settings tab instead, leave these as empty strings
+// ============================================================
+const HARDCODED = {
+  GEMINI:      '',   // paste your Gemini API key here
+  HF:          '',   // paste your HuggingFace token here
+  SE_USER:     '',   // paste Sightengine API user here
+  SE_SECRET:   '',   // paste Sightengine API secret here
+  JSONBIN_KEY: '',   // paste JSONBin master key here
+  JSONBIN_BIN: '',   // paste JSONBin bin ID here
+  NEWS:        ''    // paste your NewsAPI key here
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentImageBase64 = null;
+let currentImageUrl = null;
+let currentImageFile = null;
+let currentImageMime = 'image/jpeg';
+let userGuess = null;
+let analysisResult = null;
+let confidenceChartInst = null;
+let currentLang = 'en';
+let analyzedCount = parseInt(localStorage.getItem('ne_analyzed') || '0');
+
+// ============================================================
+// KEY HELPER
+// ============================================================
+function getKey(name){ return localStorage.getItem('ne_key_'+name) || HARDCODED[name] || ''; }
+function getKeys(){ return { gemini:getKey('GEMINI'), hf:getKey('HF'), seUser:getKey('SE_USER'), seSecret:getKey('SE_SECRET'), jsonbinKey:getKey('JSONBIN_KEY'), jsonbinBin:getKey('JSONBIN_BIN'), news:getKey('NEWS') }; }
+
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock(){
+  const n = new Date();
+  document.getElementById('clockDisplay').textContent = n.toLocaleTimeString('en-US',{hour12:false});
+  document.getElementById('dateDisplay').textContent = n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function switchTab(name, el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const target = el || document.querySelector('[data-tab="'+name+'"]');
+  if(target) target.classList.add('active');
+  if(window.innerWidth < 768){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+}
+
+// ============================================================
+// LANGUAGE
+// ============================================================
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('btnEN').classList.toggle('active', lang==='en');
+  document.getElementById('btnUR').classList.toggle('active', lang==='ur');
+  document.body.style.direction = lang==='ur' ? 'rtl' : 'ltr';
+  document.getElementById('homeSubtitle').textContent = lang==='en' ? 'Your AI-powered digital truth detector' : 'آپ کا AI سے چلنے والا ڈیجیٹل سچائی کا آلہ';
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function setTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  ['Dark','Light'].forEach(t=>{
+    document.getElementById('btn'+t)?.classList.toggle('active', t.toLowerCase()===theme);
+    document.getElementById('setting'+t)?.classList.toggle('active', t.toLowerCase()===theme);
+  });
+  localStorage.setItem('ne_theme', theme);
+}
+function setAccent(color){
+  document.documentElement.style.setProperty('--accent', color);
+  document.documentElement.style.setProperty('--glow', `0 0 20px ${color}60`);
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  localStorage.setItem('ne_accent', color);
+}
+
+// ============================================================
+// UPLOAD
+// ============================================================
+function setUploadMode(mode, btn){
+  document.querySelectorAll('#tab-analyze .upload-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('uploadDrag').style.display = mode==='drag' ? 'block' : 'none';
+  document.getElementById('uploadUrl').style.display = mode==='url' ? 'block' : 'none';
+  document.getElementById('uploadFile').style.display = mode==='file' ? 'block' : 'none';
+}
+function handleDragOver(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+function handleDragLeave(){ document.getElementById('dropZone').classList.remove('drag-over'); }
+function handleDrop(e){ e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) processImageFile(f); }
+function handleFileSelect(e){ const f=e.target.files[0]; if(f) processImageFile(f); }
+function processImageFile(file){
+  currentImageFile = file;
+  currentImageMime = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => { currentImageBase64 = e.target.result.split(',')[1]; showPreview(e.target.result, file.name); };
+  reader.readAsDataURL(file);
+}
+function loadFromUrl(){
+  const url = document.getElementById('imageUrlInput').value.trim();
+  if(!url) return;
+  currentImageUrl = url; currentImageBase64 = null; currentImageFile = null;
+  showPreview(url, url.split('/').pop() || 'Remote image');
+}
+function showPreview(src, name){
+  const p = document.getElementById('imagePreview');
+  p.src = src; p.style.display = 'block';
+  document.getElementById('previewFilename').textContent = name;
+  document.getElementById('previewActions').style.display = 'block';
+  document.getElementById('dropZone').style.display = 'none';
+  document.getElementById('quizSection').style.display = 'block';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('analysisLoader').style.display = 'none';
+}
+function clearImage(){
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('imagePreview').src = '';
+  document.getElementById('previewActions').style.display = 'none';
+  document.getElementById('dropZone').style.display = 'block';
+  document.getElementById('quizSection').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('analysisLoader').style.display = 'none';
+  currentImageBase64 = null; currentImageUrl = null; currentImageFile = null; userGuess = null;
+}
+function analyzeAnother(){ clearImage(); }
+
+// ============================================================
+// QUIZ
+// ============================================================
+function recordGuess(guess, el){
+  userGuess = guess;
+  document.querySelectorAll('.quiz-buttons .btn').forEach(b=>{ b.classList.remove('btn-primary'); b.classList.add('btn-outline'); });
+  el.classList.remove('btn-outline'); el.classList.add('btn-primary');
+  setTimeout(()=>startAnalysis(), 600);
+}
+
+// ============================================================
+// ANALYSIS
+// ============================================================
+async function startAnalysis(){
+  if(!currentImageBase64 && !currentImageUrl){ alert('Please upload an image first'); return; }
+  document.getElementById('quizSection').style.display = 'none';
+  document.getElementById('analysisLoader').style.display = 'block';
+  document.getElementById('resultsSection').style.display = 'none';
+  // Reset steps
+  ['step1','step2','step3','step4'].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    el.className = i===0 ? 'analysis-step active' : 'analysis-step';
+    el.querySelector('.status-dot').className = 'status-dot loading';
+  });
+  const keys = getKeys();
+  const [gR, hR, sR] = await Promise.allSettled([
+    callGemini(keys.gemini),
+    callHuggingFace(keys.hf),
+    callSightengine(keys.seUser, keys.seSecret)
+  ]);
+  ['step1','step2','step3'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.className = 'analysis-step done';
+    el.querySelector('.status-dot').className = 'status-dot done';
+  });
+  const s4 = document.getElementById('step4');
+  s4.className = 'analysis-step active';
+  const gemini = gR.status==='fulfilled' ? gR.value : { error: gR.reason?.message || 'Error' };
+  const hf     = hR.status==='fulfilled' ? hR.value : { error: hR.reason?.message || 'Error' };
+  const se     = sR.status==='fulfilled' ? sR.value : { error: sR.reason?.message || 'Error' };
+  setTimeout(()=>{
+    s4.className = 'analysis-step done'; s4.querySelector('.status-dot').className = 'status-dot done';
+    setTimeout(()=>{
+      document.getElementById('analysisLoader').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'block';
+      displayResults(gemini, hf, se);
+      analyzedCount++; localStorage.setItem('ne_analyzed', analyzedCount);
+      document.getElementById('statAnalyzed').textContent = analyzedCount;
+    }, 400);
+  }, 500);
+}
+
+// ============================================================
+// GEMINI
+// ============================================================
+async function callGemini(apiKey){
+  if(!apiKey) return { error:'No key', verdict:'UNKNOWN', confidence:0.5, explanation:'Add Gemini API key in Settings tab.', clues:[], threat_level:50 };
+  const prompt = `You are an expert AI image forensics analyst. Carefully analyze this image and determine:
+1. Is it a REAL photograph taken by a camera?
+2. Is it AI_GENERATED (made by Midjourney, DALL-E, Stable Diffusion, Firefly, etc)?
+3. Is it a DEEPFAKE (real person with AI-manipulated face/body)?
+
+Inspect these clues: fingers/hands (extra/missing/deformed), eyes (glassy/asymmetric/wrong reflections), skin (too smooth/waxy/no pores), hair (unnatural strands), background (blurry/inconsistent/contextually wrong), lighting (inconsistent shadows), edges (blurry at face-background junction), text in image (garbled), facial symmetry.
+
+Respond ONLY in this JSON format with no markdown, no backticks:
+{"verdict":"REAL" or "AI_GENERATED" or "DEEPFAKE","confidence":0.0-1.0,"explanation":"2-3 sentences","clues":["clue1","clue2","clue3"],"threat_level":0-100}`;
+  const parts = [{ text: prompt }];
+  if(currentImageBase64) parts.push({ inlineData:{ mimeType: currentImageMime, data: currentImageBase64 } });
+  else parts.push({ text: `[Analyze image at URL: ${currentImageUrl}]` });
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+    { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1,maxOutputTokens:500} }) });
+  if(!resp.ok) throw new Error('Gemini HTTP '+resp.status);
+  const data = await resp.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+  try{ return JSON.parse(text.replace(/```json|```/g,'').trim()); }
+  catch{ const ai=/ai.gen|artificial|generated|fake|synthetic/i.test(text); return { verdict: ai?'AI_GENERATED':'REAL', confidence:0.65, explanation: text.slice(0,250), clues:[], threat_level: ai?70:20 }; }
+}
+
+// ============================================================
+// HUGGINGFACE
+// ============================================================
+async function callHuggingFace(apiKey){
+  if(!apiKey) return { error:'No key — add HuggingFace token in Settings', ai_score:0.5, label:'UNKNOWN' };
+  // Build blob from base64 or URL
+  let blob;
+  try{
+    if(currentImageBase64){
+      const b=atob(currentImageBase64), arr=new Uint8Array(b.length);
+      for(let i=0;i<b.length;i++) arr[i]=b.charCodeAt(i);
+      blob=new Blob([arr],{type:currentImageMime});
+    } else {
+      const r=await fetch(currentImageUrl,{mode:'cors'}); blob=await r.blob();
+    }
+  } catch(e){ return { error:'Could not load image for HF: '+e.message, ai_score:0.5, label:'UNKNOWN' }; }
+
+  const HF_MODEL = 'https://api-inference.huggingface.co/models/Organika/sdxl-detector';
+  const headers = { 'Authorization':'Bearer '+apiKey, 'x-use-cache':'false' };
+
+  // Retry up to 3 times (model may be loading – returns 503)
+  for(let attempt=0; attempt<3; attempt++){
+    try{
+      const resp = await fetch(HF_MODEL,{method:'POST',headers,body:blob});
+      if(resp.status===503){
+        // Model is loading – wait 8s and retry
+        await new Promise(r=>setTimeout(r,8000));
+        continue;
+      }
+      if(!resp.ok){ const t=await resp.text(); throw new Error('HF HTTP '+resp.status+': '+t.slice(0,120)); }
+      const data = await resp.json();
+      if(Array.isArray(data)){
+        // sdxl-detector labels: "artificial" / "real"
+        const art=data.find(d=>/artif|ai|fake|gen|synth/i.test(d.label));
+        const real=data.find(d=>/real|human|photo|natural/i.test(d.label));
+        const aiScore = art?.score ?? (real ? 1-real.score : 0.5);
+        return { ai_score:aiScore, label:aiScore>0.5?'AI_GENERATED':'REAL', raw:data, model:'sdxl-detector' };
+      }
+      if(data.error) throw new Error(data.error);
+      return { ai_score:0.5, label:'UNKNOWN' };
+    } catch(e){
+      if(attempt===2) throw e;
+    }
+  }
+  return { error:'HuggingFace model timed out loading. Try again in 30s.', ai_score:0.5, label:'UNKNOWN' };
+}
+
+// ============================================================
+// SIGHTENGINE
+// ============================================================
+async function callSightengine(user, secret){
+  if(!user||!secret) return { error:'No key', ai_score:0.5, label:'UNKNOWN' };
+  const form = new FormData();
+  form.append('models','genai'); form.append('api_user',user); form.append('api_secret',secret);
+  if(currentImageFile) form.append('media', currentImageFile);
+  else if(currentImageUrl) form.append('url', currentImageUrl);
+  else if(currentImageBase64){
+    const b=atob(currentImageBase64),arr=new Uint8Array(b.length);
+    for(let i=0;i<b.length;i++) arr[i]=b.charCodeAt(i);
+    form.append('media', new Blob([arr],{type:currentImageMime}), 'img.jpg');
+  }
+  const resp = await fetch('https://api.sightengine.com/1.0/check.json', {method:'POST',body:form});
+  if(!resp.ok) throw new Error('Sightengine HTTP '+resp.status);
+  const data = await resp.json();
+  const score = data.type?.ai_generated ?? 0;
+  return { ai_score: score, label: score>0.5?'AI_GENERATED':'REAL', raw: data };
+}
+
+// ============================================================
+// DISPLAY RESULTS
+// ============================================================
+function displayResults(gemini, hf, se){
+  const scores = [];
+  // Gemini
+  if(gemini && !gemini.error){
+    const c = Math.round((gemini.confidence||0.5)*100);
+    const aiConf = gemini.verdict==='REAL' ? (1-gemini.confidence) : (gemini.confidence||0.5);
+    scores.push(aiConf);
+    document.getElementById('geminiResult').innerHTML = `<span class="verdict-${gemini.verdict==='REAL'?'real':'ai'}">${(gemini.verdict||'?').replace('_',' ')}</span>`;
+    document.getElementById('geminiScore').innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:${c}%"></div></div><div style="font-size:.7rem;color:var(--text-muted)">${c}% confidence</div>`;
+  } else {
+    document.getElementById('geminiResult').innerHTML = `<span style="color:var(--warning)">${gemini?.error||'Error'}</span>`;
+  }
+  // HuggingFace
+  if(hf && !hf.error){
+    const c = Math.round((hf.ai_score||0.5)*100);
+    scores.push(hf.ai_score);
+    document.getElementById('hfResult').innerHTML = `<span class="verdict-${hf.label==='REAL'?'real':'ai'}">${(hf.label||'?').replace('_',' ')}</span>`;
+    const hfModelName = hf.model || 'sdxl-detector';
+    document.getElementById('hfScore').innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:${c}%"></div></div><div style="font-size:.7rem;color:var(--text-muted)">${c}% AI score (${hfModelName})</div>`;
+  } else {
+    document.getElementById('hfResult').innerHTML = `<span style="color:var(--warning)">${hf?.error||'Error'}</span>`;
+  }
+  // Sightengine
+  if(se && !se.error){
+    const c = Math.round((se.ai_score||0.5)*100);
+    scores.push(se.ai_score);
+    document.getElementById('seResult').innerHTML = `<span class="verdict-${se.label==='REAL'?'real':'ai'}">${(se.label||'?').replace('_',' ')}</span>`;
+    document.getElementById('seScore').innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:${c}%"></div></div><div style="font-size:.7rem;color:var(--text-muted)">${c}% AI probability</div>`;
+  } else {
+    document.getElementById('seResult').innerHTML = `<span style="color:var(--warning)">${se?.error||'Error'}</span>`;
+  }
+
+  // Combined score
+  const avgAI = scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 0.5;
+  const threat = gemini?.threat_level ?? Math.round(avgAI*100);
+  let verdict, icon, cls;
+  if(avgAI>=0.8){ verdict='AI GENERATED'; icon='🤖'; cls='ai-gen'; }
+  else if(avgAI>=0.6){ verdict='LIKELY AI GENERATED'; icon='⚠️'; cls='deepfake'; }
+  else if(avgAI>=0.4){ verdict='UNCERTAIN'; icon='🔍'; cls=''; }
+  else if(avgAI>=0.2){ verdict='LIKELY REAL'; icon='✅'; cls='real'; }
+  else{ verdict='REAL PHOTO'; icon='📷'; cls='real'; }
+
+  analysisResult = { verdict, avgAI, threat, gemini, hf, se };
+
+  // Final verdict card
+  const vc = document.getElementById('finalVerdictCard');
+  vc.className = 'final-verdict ' + cls;
+  document.getElementById('verdictIcon').textContent = icon;
+  document.getElementById('verdictLabel').textContent = verdict;
+  document.getElementById('verdictConfidence').textContent = `Combined AI Score: ${Math.round(avgAI*100)}% — based on ${scores.length} detector${scores.length!==1?'s':''}`;
+
+  // User guess
+  if(userGuess){
+    const correct = (userGuess==='real' && avgAI<0.4)||(userGuess==='ai' && avgAI>=0.6)||(userGuess==='deepfake' && avgAI>=0.4 && avgAI<0.8);
+    const g = document.getElementById('userGuessResult');
+    g.style.display = 'block';
+    g.innerHTML = correct
+      ? `<span style="color:var(--success)">✅ Great instinct! You guessed correctly — ${userGuess.toUpperCase()}!</span>`
+      : `<span style="color:var(--warning)">🤔 You guessed ${userGuess.toUpperCase()}, but our verdict is ${verdict}. AI fakes are getting harder to spot!</span>`;
+  }
+
+  // Threat meter
+  document.getElementById('threatFill').style.width = threat+'%';
+  document.getElementById('threatPercent').textContent = threat+'%';
+  const threatText = threat>75 ? '🔴 CRITICAL — This content could cause serious harm if shared as genuine media.'
+    : threat>50 ? '🟠 HIGH RISK — Exercise caution. Verify through trusted sources before sharing.'
+    : threat>25 ? '🟡 MODERATE — Content appears mostly genuine but warrants a second look.'
+    : '🟢 LOW RISK — Content appears to be authentic. Normal sharing caution applies.';
+  document.getElementById('threatDescription').textContent = threatText;
+
+  // Clues
+  const clues = gemini?.clues || [];
+  document.getElementById('cluesContainer').innerHTML = clues.length
+    ? clues.map(c=>`<span class="clue-tag"><i class="fas fa-circle-exclamation"></i>${c}</span>`).join('')
+    : '<span style="font-size:.8rem;color:var(--text-secondary)">No specific visual clues detected</span>';
+  if(gemini?.explanation) document.getElementById('geminiExplanation').textContent = '📝 Gemini analysis: ' + gemini.explanation;
+
+  // Chart
+  buildChart(gemini, hf, se, avgAI);
+
+  // Share card
+  document.getElementById('shareCardIcon').textContent = icon;
+  document.getElementById('shareCardVerdict').textContent = verdict;
+  document.getElementById('shareCardConf').textContent = `AI Score: ${Math.round(avgAI*100)}% | Threat Level: ${threat}%`;
+
+  // Voice
+  if(document.getElementById('voiceOutputEnabled').checked){
+    const msg = `Analysis complete. Verdict: ${verdict}. AI confidence score is ${Math.round(avgAI*100)} percent. Threat level: ${threat} percent.`;
+    speak(msg);
+  }
+}
+
+// ============================================================
+// CHART
+// ============================================================
+function buildChart(gemini, hf, se, combined){
+  const ctx = document.getElementById('confidenceChart').getContext('2d');
+  if(confidenceChartInst) confidenceChartInst.destroy();
+  const gAI = gemini&&!gemini.error ? (gemini.verdict==='REAL'?(1-gemini.confidence)*100:(gemini.confidence||0)*100) : null;
+  const hAI = hf&&!hf.error ? (hf.ai_score||0)*100 : null;
+  const sAI = se&&!se.error ? (se.ai_score||0)*100 : null;
+  const labels = [], data = [], bg = [], border = [];
+  if(gAI!==null){ labels.push('Gemini'); data.push(gAI); bg.push('rgba(0,229,255,0.6)'); border.push('#00e5ff'); }
+  if(hAI!==null){ labels.push('HuggingFace'); data.push(hAI); bg.push('rgba(124,58,237,0.6)'); border.push('#7c3aed'); }
+  if(sAI!==null){ labels.push('Sightengine'); data.push(sAI); bg.push('rgba(245,158,11,0.6)'); border.push('#f59e0b'); }
+  labels.push('Combined'); data.push(combined*100);
+  bg.push(combined>0.5?'rgba(239,68,68,0.7)':'rgba(16,185,129,0.7)');
+  border.push(combined>0.5?'#ef4444':'#10b981');
+  confidenceChartInst = new Chart(ctx, {
+    type:'bar', data:{ labels, datasets:[{ label:'AI Probability (%)', data, backgroundColor:bg, borderColor:border, borderWidth:1, borderRadius:6 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ y:{ beginAtZero:true, max:100, ticks:{color:'#64748b',callback:v=>v+'%'}, grid:{color:'rgba(255,255,255,0.05)'} }, x:{ticks:{color:'#64748b'},grid:{display:false}} },
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'% AI probability'}} }
+    }
+  });
+}
+
+// ============================================================
+// NEWS VERIFICATION
+// ============================================================
+function setNewsMode(mode, btn){
+  document.querySelectorAll('#tab-news .upload-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('newsHeadlineInput').style.display = mode==='headline'?'block':'none';
+  document.getElementById('newsUrlInput').style.display = mode==='url'?'block':'none';
+  document.getElementById('newsImageInput').style.display = mode==='image'?'block':'none';
+}
+function handleNewsImage(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{ const p=document.getElementById('newsImagePreview'); p.src=ev.target.result; p.style.display='block'; }; r.readAsDataURL(f);
+}
+async function verifyNews(){
+  const keys = getKeys();
+  if(!keys.gemini){ alert('Please add your Gemini API key in Settings'); return; }
+  const text = document.getElementById('newsTextInput').value.trim();
+  const url = document.getElementById('newsUrlField').value.trim();
+  const content = text || url || 'a news screenshot';
+  document.getElementById('newsLoader').style.display='block';
+  document.getElementById('newsResult').style.display='none';
+
+  // Fetch NewsAPI headlines for cross-reference if key available
+  let newsContext = '';
+  if(keys.news && (text || url)){
+    try{
+      const q = encodeURIComponent((text||url).split(' ').slice(0,8).join(' '));
+      const nr = await fetch(`https://newsapi.org/v2/everything?q=${q}&pageSize=5&apiKey=${keys.news}&sortBy=relevancy`);
+      const nd = await nr.json();
+      if(nd.articles?.length){
+        newsContext = '\n\nRELEVANT NEWS SOURCES FOUND:\n' + nd.articles.map(a=>`- "${a.title}" (${a.source.name}, ${a.publishedAt?.slice(0,10)})`).join('\n');
+      }
+    } catch(e){ console.warn('NewsAPI failed:',e); }
+  }
+
+  const prompt = `You are a professional fact-checker. Verify this news claim: "${content}"${newsContext}
+Analyze it and respond ONLY in this JSON format (no markdown, no backticks):
+{"verdict":"VERIFIED" or "UNVERIFIED" or "DISPUTED" or "MISINFORMATION","confidence":0.0-1.0,"summary":"2-3 sentence analysis","red_flags":["flag1","flag2"],"recommended_sources":["Dawn.com","Geo News","BBC Urdu","Reuters","AP News"],"context":"relevant background"}`;
+  try{
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,
+      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
+    const data = await resp.json();
+    const t = data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
+    const result = JSON.parse(t.replace(/```json|```/g,'').trim());
+    showNewsResult(result);
+  } catch(err){ document.getElementById('newsLoader').style.display='none'; alert('Verification failed: '+err.message); }
+}
+function showNewsResult(r){
+  document.getElementById('newsLoader').style.display='none';
+  document.getElementById('newsResult').style.display='block';
+  const icons={VERIFIED:'✅',UNVERIFIED:'❓',DISPUTED:'⚠️',MISINFORMATION:'🚫'};
+  const classes={VERIFIED:'real',UNVERIFIED:'',DISPUTED:'deepfake',MISINFORMATION:'ai-gen'};
+  const vc=document.getElementById('newsVerdictCard');
+  vc.className='final-verdict '+(classes[r.verdict]||'');
+  document.getElementById('newsVerdictIcon').textContent=icons[r.verdict]||'📰';
+  document.getElementById('newsVerdictLabel').textContent=r.verdict;
+  document.getElementById('newsVerdictDetail').textContent=`Confidence: ${Math.round((r.confidence||0.5)*100)}%`;
+  let html=`<p style="margin-bottom:12px">${r.summary||''}</p>`;
+  if(r.red_flags?.length){ html+=`<div style="margin-bottom:12px"><strong>🚩 Red Flags:</strong><ul style="margin-top:6px;padding-left:20px">`; r.red_flags.forEach(f=>html+=`<li style="margin-bottom:4px">${f}</li>`); html+='</ul></div>'; }
+  if(r.context) html+=`<div style="margin-top:8px;padding:10px;background:var(--bg-secondary);border-radius:6px"><strong>📌 Context:</strong> ${r.context}</div>`;
+  document.getElementById('newsAnalysisText').innerHTML=html;
+  // Map source names → verified URLs
+  const sourceURLs = {
+    'Dawn.com':'https://www.dawn.com','Dawn':'https://www.dawn.com',
+    'Geo News':'https://www.geo.tv','Geo':'https://www.geo.tv',
+    'ARY News':'https://arynews.tv','ARY':'https://arynews.tv',
+    'BBC Urdu':'https://www.bbc.com/urdu','BBC':'https://www.bbc.com',
+    'Reuters':'https://www.reuters.com','AP News':'https://apnews.com',
+    'The New York Times':'https://www.nytimes.com',
+    'The Wall Street Journal':'https://www.wsj.com',
+    'Associated Press (AP News)':'https://apnews.com',
+    'Associated Press':'https://apnews.com',
+    'Al Jazeera':'https://www.aljazeera.com',
+    'Snopes':'https://www.snopes.com',
+    'FactCheck.org':'https://www.factcheck.org',
+    'PolitiFact':'https://www.politifact.com',
+    'Google Fact Check':'https://toolbox.google.com/factcheck/explorer',
+    'Major international news agencies':'https://reuters.com'
+  };
+  const sources = r.recommended_sources || [];
+  document.getElementById('newsSources').innerHTML = sources.length
+    ? sources.map(s=>{
+        const url = sourceURLs[s] || ('https://www.google.com/search?q='+encodeURIComponent(s+' fact check'));
+        return `<a href="${url}" target="_blank" rel="noopener" class="source-chip" style="text-decoration:none;cursor:pointer"><i class="fas fa-external-link-alt"></i>${s}</a>`;
+      }).join('')
+    : '<span style="font-size:.8rem;color:var(--text-muted)">No specific sources identified</span>';
+}
+
+// ============================================================
+// PDF EXPORT
+// ============================================================
+async function exportPDF(){
+  if(!analysisResult){ alert('Please analyze an image first'); return; }
+  const {jsPDF}=window.jspdf, doc=new jsPDF();
+  doc.setFillColor(8,11,20); doc.rect(0,0,210,40,'F');
+  doc.setTextColor(0,229,255); doc.setFontSize(22); doc.setFont('courier','bold'); doc.text('NeuralEye',15,18);
+  doc.setFontSize(10); doc.setFont('courier','normal'); doc.text('AI IMAGE DETECTION REPORT',15,27);
+  doc.setTextColor(100,116,139); doc.text(new Date().toLocaleString(),15,35);
+  doc.setTextColor(0,0,0); doc.setFontSize(16); doc.setFont('courier','bold'); doc.text('VERDICT: '+(analysisResult.verdict||'UNKNOWN'),15,55);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+  doc.text(`Combined AI Score: ${Math.round(analysisResult.avgAI*100)}%`,15,65);
+  doc.text(`Threat Level: ${analysisResult.threat}%`,15,73);
+  doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.text('API Results:',15,85);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); let y=93;
+  const g=analysisResult.gemini, h=analysisResult.hf, s=analysisResult.se;
+  if(g&&!g.error){ doc.text(`• Gemini: ${g.verdict} (${Math.round((g.confidence||0)*100)}% confidence)`,15,y); y+=8; if(g.explanation){ const ln=doc.splitTextToSize('  '+g.explanation,180); doc.text(ln,15,y); y+=ln.length*6+4; } }
+  if(h&&!h.error){ doc.text(`• HuggingFace: ${h.label} (AI score: ${Math.round((h.ai_score||0)*100)}%)`,15,y); y+=8; }
+  if(s&&!s.error){ doc.text(`• Sightengine: ${s.label} (AI score: ${Math.round((s.ai_score||0)*100)}%)`,15,y); y+=8; }
+  if(g?.clues?.length){ y+=6; doc.setFont('helvetica','bold'); doc.text('Detected Clues:',15,y); y+=8; doc.setFont('helvetica','normal'); g.clues.forEach(c=>{ doc.text('• '+c,15,y); y+=7; }); }
+  doc.setFontSize(8); doc.setTextColor(150,150,150);
+  doc.text('Generated by NeuralEye — AI Image & News Detection Platform | Verify before you share',15,285);
+  doc.save('NeuralEye-Report-'+Date.now()+'.pdf');
+}
+
+// ============================================================
+// SHARE CARD
+// ============================================================
+async function generateShareCard(){
+  if(!analysisResult){ alert('Please analyze an image first'); return; }
+  const sc=document.getElementById('shareCard'); sc.style.display='block';
+  const canvas=await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
+  const a=document.createElement('a'); a.download='NeuralEye-Result.png'; a.href=canvas.toDataURL('image/png'); a.click();
+}
+function shareWhatsApp(){
+  if(!analysisResult){ alert('Please analyze an image first'); return; }
+  const t=encodeURIComponent(`🔍 NeuralEye Detection\n\nVerdict: ${analysisResult.verdict}\nAI Score: ${Math.round(analysisResult.avgAI*100)}%\nThreat: ${analysisResult.threat}%\n\nVerify before you share! 🛡️\nneuraleye.github.io`);
+  window.open('https://wa.me/?text='+t,'_blank');
+}
+function copyResult(){
+  if(!analysisResult) return;
+  const t=`NeuralEye Result\nVerdict: ${analysisResult.verdict}\nAI Score: ${Math.round(analysisResult.avgAI*100)}%\nThreat: ${analysisResult.threat}%\n${analysisResult.gemini?.explanation||''}`;
+  navigator.clipboard.writeText(t).then(()=>{ const b=document.querySelector('.action-buttons'); const msg=document.createElement('span'); msg.textContent=' ✅ Copied!'; msg.style.cssText='font-size:.8rem;color:var(--success)'; b.appendChild(msg); setTimeout(()=>msg.remove(),2000); });
+}
+
+// ============================================================
+// PLEDGE
+// ============================================================
+function loadPledgeCount(){
+  const p=JSON.parse(localStorage.getItem('ne_pledges')||'{"count":0,"names":[]}');
+  document.getElementById('pledgeCount').textContent=p.count;
+  document.getElementById('statPledges').textContent=p.count;
+  const list=document.getElementById('pledgersList');
+  list.innerHTML = p.names?.length
+    ? p.names.slice(-10).reverse().map(n=>`<div class="pledger-item"><i class="fas fa-circle-check"></i>${n.name}${n.city?' — '+n.city:''}</div>`).join('')
+    : '<div style="font-size:.8rem;color:var(--text-muted)">Be the first to pledge!</div>';
+}
+async function submitPledge(){
+  const name=document.getElementById('pledgeName').value.trim();
+  if(!name){ document.getElementById('pledgeMsg').innerHTML='<span style="color:var(--danger)">Please enter your name</span>'; return; }
+  const city=document.getElementById('pledgeCity').value.trim();
+  const p=JSON.parse(localStorage.getItem('ne_pledges')||'{"count":0,"names":[]}');
+  p.count++; p.names.push({name,city,date:new Date().toISOString()});
+  localStorage.setItem('ne_pledges',JSON.stringify(p));
+  document.getElementById('pledgeCount').textContent=p.count;
+  document.getElementById('statPledges').textContent=p.count;
+  document.getElementById('pledgeMsg').innerHTML=`<span style="color:var(--success)">✅ Thank you ${name}! You are pledger #${p.count}. Together we fight misinformation! 🛡️</span>`;
+  document.getElementById('pledgeName').value=''; document.getElementById('pledgeCity').value='';
+  const keys=getKeys();
+  if(keys.jsonbinKey&&keys.jsonbinBin){
+    try{ await fetch(`https://api.jsonbin.io/v3/b/${keys.jsonbinBin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':keys.jsonbinKey},body:JSON.stringify({count:p.count})}); }catch{}
+  }
+  loadPledgeCount();
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function saveKeys(){
+  const map={GEMINI:'keyGemini',HF:'keyHF',SE_USER:'keySEUser',SE_SECRET:'keySESecret',JSONBIN_KEY:'keyJSONBin',JSONBIN_BIN:'keyBinID',NEWS:'keyNews'};
+  Object.entries(map).forEach(([k,id])=>{ const v=document.getElementById(id).value.trim(); if(v) localStorage.setItem('ne_key_'+k,v); });
+  const msg=document.getElementById('keysSavedMsg'); msg.style.color='var(--success)'; msg.textContent='✅ Keys saved to browser storage';
+  setTimeout(()=>msg.textContent='',3000);
+}
+function clearKeys(){
+  if(!confirm('Clear all saved API keys?')) return;
+  ['GEMINI','HF','SE_USER','SE_SECRET','JSONBIN_KEY','JSONBIN_BIN','NEWS'].forEach(k=>localStorage.removeItem('ne_key_'+k));
+  ['keyGemini','keyHF','keySEUser','keySESecret','keyJSONBin','keyBinID','keyNews'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('keysSavedMsg').textContent='Keys cleared';
+}
+function toggleKeyVis(id){ const f=document.getElementById(id); f.type=f.type==='password'?'text':'password'; }
+function loadSavedKeys(){
+  const map={GEMINI:'keyGemini',HF:'keyHF',SE_USER:'keySEUser',SE_SECRET:'keySESecret',JSONBIN_KEY:'keyJSONBin',JSONBIN_BIN:'keyBinID',NEWS:'keyNews'};
+  Object.entries(map).forEach(([k,id])=>{ const v=localStorage.getItem('ne_key_'+k)||HARDCODED[k]; if(v) document.getElementById(id).value=v; });
+}
+
+// ============================================================
+// ACCORDION
+// ============================================================
+function toggleAccordion(header){
+  const body=header.nextElementSibling, icon=header.querySelector('i');
+  body.classList.toggle('open');
+  icon.style.transform=body.classList.contains('open')?'rotate(180deg)':'';
+}
+
+// ============================================================
+// VOICE
+// ============================================================
+let recognition=null, synth=window.speechSynthesis;
+function speak(text){
+  if(!synth) return; synth.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=parseFloat(document.getElementById('voiceSpeed')?.value||'1');
+  u.lang=currentLang==='ur'?'ur-PK':'en-US';
+  synth.speak(u);
+}
+function startNewsVoice(){
+  const btn = document.getElementById('newsVoiceBtn');
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert('Voice input requires Chrome or Edge browser on HTTPS');
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SR();
+  rec.lang=currentLang==='ur'?'ur-PK':'en-US';
+  rec.interimResults=false;
+  btn.innerHTML='<i class="fas fa-microphone" style="color:red"></i> Listening...';
+  btn.style.borderColor='var(--danger)';
+  rec.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    document.getElementById('newsTextInput').value=t;
+    // switch to headline mode to show it
+    document.getElementById('newsHeadlineInput').style.display='block';
+    document.getElementById('newsUrlInput').style.display='none';
+    document.getElementById('newsImageInput').style.display='none';
+    document.querySelectorAll('#tab-news .upload-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  };
+  rec.onend=()=>{ btn.innerHTML='<i class="fas fa-microphone"></i> Voice Input'; btn.style.borderColor=''; };
+  rec.onerror=err=>{ btn.innerHTML='<i class="fas fa-microphone"></i> Voice Input'; btn.style.borderColor=''; alert('Voice error: '+err.error); };
+  rec.start();
+}
+
+function toggleGlobalVoice(){
+  const btn=document.getElementById('voiceFab');
+  if(recognition?.running){ recognition.stop(); btn.classList.remove('listening'); return; }
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){ alert('Voice input requires Chrome browser'); return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR(); recognition.lang=currentLang==='ur'?'ur-PK':'en-US'; recognition.interimResults=false; recognition.running=true;
+  recognition.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    const active=document.querySelector('.tab-content.active').id;
+    if(active==='tab-analyze'){ setUploadMode('url',document.querySelectorAll('#tab-analyze .upload-tab')[1]); document.getElementById('imageUrlInput').value=t; }
+    else if(active==='tab-news'){ document.getElementById('newsTextInput').value=t; }
+    else if(active==='tab-askai'){ document.getElementById('askInput').value=t; }
+  };
+  recognition.onend=()=>{ recognition.running=false; btn.classList.remove('listening'); };
+  recognition.onerror=()=>{ recognition.running=false; btn.classList.remove('listening'); };
+  recognition.start(); btn.classList.add('listening');
+}
+document.getElementById('voiceSpeed')?.addEventListener('input',function(){
+  document.getElementById('voiceSpeedLabel').textContent = parseFloat(this.value).toFixed(1)+'x';
+});
+
+// ============================================================
+// VOICE TOGGLE BUTTON
+// ============================================================
+function toggleVoiceOutput(){
+  const cb = document.getElementById('voiceOutputEnabled');
+  const btn = document.getElementById('voiceToggleBtn');
+  cb.checked = !cb.checked;
+  if(cb.checked){
+    btn.innerHTML = '<i class="fas fa-volume-up"></i> ON';
+    btn.style.background = 'var(--success)';
+    btn.style.boxShadow = '0 0 12px rgba(16,185,129,0.35)';
+  } else {
+    btn.innerHTML = '<i class="fas fa-volume-xmark"></i> OFF';
+    btn.style.background = 'var(--text-muted)';
+    btn.style.boxShadow = 'none';
+  }
+  localStorage.setItem('ne_voice', cb.checked ? '1' : '0');
+}
+
+// ============================================================
+// ASK AI (chat)
+// ============================================================
+let askHistory = []; // { role, content }
+
+function setAskTopic(prefix){
+  const inp = document.getElementById('askInput');
+  inp.value = prefix;
+  inp.focus();
+  inp.setSelectionRange(prefix.length, prefix.length);
+}
+
+// Simple markdown → HTML renderer
+function mdToHtml(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // code blocks
+    .replace(/```(\w*)\n([\s\S]*?)```/g,'<pre><code>$2</code></pre>')
+    // inline code
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    // bold
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    // italic
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    // headers
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    // unordered list
+    .replace(/^\s*[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    // ordered list
+    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    // paragraphs
+    .replace(/\n{2,}/g,'</p><p>')
+    .replace(/\n/g,'<br>');
+}
+
+function appendBubble(role, text, id){
+  const hist = document.getElementById('askChatHistory');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble ' + role;
+  div.id = id || '';
+  if(role === 'user'){
+    div.innerHTML = `<div class="bubble-label"><i class="fas fa-user"></i> You</div><div>${text.replace(/\n/g,'<br>')}</div>`;
+  } else {
+    const html = mdToHtml(text);
+    div.innerHTML = `
+      <div class="bubble-label"><i class="fas fa-microchip"></i> NeuralEye AI</div>
+      <div class="bubble-text"><p>${html}</p></div>
+      <div class="bubble-actions">
+        <button class="btn btn-outline btn-sm" onclick="speakBubble(this)"><i class="fas fa-volume-up"></i> Read Aloud</button>
+        <button class="btn btn-outline btn-sm" onclick="copyBubble(this)"><i class="fas fa-copy"></i> Copy</button>
+      </div>`;
+  }
+  hist.appendChild(div);
+  div.scrollIntoView({behavior:'smooth', block:'start'});
+  return div;
+}
+
+function speakBubble(btn){
+  const text = btn.closest('.chat-bubble').querySelector('.bubble-text')?.innerText || '';
+  speak(text);
+}
+function copyBubble(btn){
+  const text = btn.closest('.chat-bubble').querySelector('.bubble-text')?.innerText || '';
+  navigator.clipboard.writeText(text).then(()=>{ btn.innerHTML='<i class="fas fa-check"></i> Copied!'; setTimeout(()=>btn.innerHTML='<i class="fas fa-copy"></i> Copy',2000); });
+}
+
+async function askAI(){
+  const keys = getKeys();
+  if(!keys.gemini){ alert('Please add your Gemini API key in Settings'); return; }
+  const q = document.getElementById('askInput').value.trim();
+  if(!q) return;
+  document.getElementById('askInput').value = '';
+
+  appendBubble('user', q);
+  askHistory.push({ role:'user', content: q });
+
+  document.getElementById('askLoader').style.display = 'block';
+
+  // Build conversation for Gemini (last 10 turns)
+  const histSlice = askHistory.slice(-10);
+  const convText = histSlice.map(m=>(m.role==='user'?'User: ':'Assistant: ') + m.content).join('\n');
+
+  const systemPrompt = `You are NeuralEye AI — a helpful, friendly, and knowledgeable assistant. You can help with education, science, health, technology, mathematics, Pakistan current affairs, career guidance, and any daily-life questions. Answer clearly and concisely. Use simple language. When helpful, use bullet points or numbered steps. For Pakistani users, give locally relevant examples where appropriate.`;
+
+  const fullPrompt = `${systemPrompt}\n\nConversation so far:\n${convText}\n\nGive a clear, well-structured response.`;
+
+  try{
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents:[{parts:[{text:fullPrompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:1024} }) });
+    const data = await resp.json();
+    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I couldn\'t generate a response. Please try again.';
+    document.getElementById('askLoader').style.display = 'none';
+    appendBubble('ai', answer);
+    askHistory.push({ role:'assistant', content: answer });
+    // Auto voice if enabled
+    if(document.getElementById('voiceOutputEnabled').checked){
+      const plain = answer.replace(/[#*`>\-]/g,'').replace(/\n+/g,' ').slice(0,400);
+      speak(plain);
+    }
+  } catch(err){
+    document.getElementById('askLoader').style.display = 'none';
+    appendBubble('ai', '⚠️ Error: ' + err.message + '. Check your Gemini API key in Settings.');
+  }
+}
+
+function clearAskAI(){
+  askHistory = [];
+  document.getElementById('askChatHistory').innerHTML = '';
+}
+
+// Allow Enter (without Shift) to send
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('askInput')?.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); askAI(); }
+  });
+});
+
+// ============================================================
+// FACTS OF THE DAY
+// ============================================================
+const FACTS = [
+  { text: "96% of all deepfake videos online are non-consensual intimate content — the vast majority targeting women.", source: "Sensity AI, 2019" },
+  { text: "It takes as little as 3 seconds of audio to clone someone's voice using modern AI tools.", source: "Microsoft Research" },
+  { text: "Pakistan has over 50 million WhatsApp users — making it one of the most vulnerable countries to viral misinformation.", source: "Digital Pakistan Report" },
+  { text: "A deepfake video of President Zelenskyy ordering surrender was shared during the Russia-Ukraine war — debunked in hours.", source: "Reuters, 2022" },
+  { text: "In Pakistan's 2024 elections, AI-generated videos of political leaders made false statements days before polling day.", source: "Dawn, 2024" },
+  { text: "The word 'deepfake' was coined by a Reddit user in 2017 — the technology has since become 100x more accessible.", source: "MIT Technology Review" },
+  { text: "It now takes less than $5 and 10 minutes to create a convincing deepfake video using free online tools.", source: "AI Safety Institute" },
+  { text: "Only 26% of people can reliably tell the difference between real and AI-generated faces in studies.", source: "Nature Communications, 2022" },
+  { text: "Pakistan's PECA 2016 Act criminalizes digital defamation with penalties up to 3 years imprisonment.", source: "FIA Pakistan" },
+  { text: "Over 500,000 deepfake videos were posted online in 2023 — a 550% increase from 2019.", source: "Deeptrace Labs" }
+];
+function loadFactOfDay(){
+  const dayIndex = Math.floor(Date.now() / 86400000) % FACTS.length;
+  const f = FACTS[dayIndex];
+  document.getElementById('factOfDay').textContent = f.text;
+  document.getElementById('factSource').textContent = '— ' + f.source;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  updateClock();
+  loadFactOfDay();
+  loadPledgeCount();
+  loadSavedKeys();
+  // Restore theme
+  const savedTheme = localStorage.getItem('ne_theme') || 'dark';
+  setTheme(savedTheme);
+  // Restore accent
+  const savedAccent = localStorage.getItem('ne_accent');
+  if(savedAccent){ document.documentElement.style.setProperty('--accent', savedAccent); document.documentElement.style.setProperty('--glow', `0 0 20px ${savedAccent}60`); document.getElementById('customColor').value=savedAccent; }
+  // Restore analyzed count
+  document.getElementById('statAnalyzed').textContent = analyzedCount;
+  // Restore voice setting
+  const voiceSaved = localStorage.getItem('ne_voice');
+  if(voiceSaved === '0'){
+    document.getElementById('voiceOutputEnabled').checked = false;
+    const btn = document.getElementById('voiceToggleBtn');
+    if(btn){ btn.innerHTML = '<i class="fas fa-volume-xmark"></i> OFF'; btn.style.background='var(--text-muted)'; btn.style.boxShadow='none'; }
+  }
+  // Drag-over for whole window
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => { e.preventDefault(); const f=e.dataTransfer?.files?.[0]; if(f&&f.type.startsWith('image/')){ switchTab('analyze'); processImageFile(f); } });
+});
+</script>
+</body>
+</html>
