@@ -1382,7 +1382,10 @@ Analyze it and respond ONLY in this JSON format (no markdown, no backticks):
       newsParts.push({inlineData:{mimeType:mime, data:b64}});
     }
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,
-      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:newsParts}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
+       { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
+    if(!resp.ok){ const errBody = await resp.text(); throw new Error('Gemini API error '+resp.status+': '+errBody.slice(0,120)); }
+    const data = await resp.json();
+    if(!data.candidates) throw new Error('Gemini returned no candidates. Check your API key.');
     const t = data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
     const result = JSON.parse(t.replace(/```json|```/g,'').trim());
     showNewsResult(result);
