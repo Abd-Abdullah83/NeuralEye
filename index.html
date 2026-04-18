@@ -371,6 +371,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="nav-section-label">Main</div>
     <div class="nav-item active" data-tab="home" onclick="switchTab('home',this)"><i class="fas fa-home"></i> Home</div>
     <div class="nav-item" data-tab="analyze" onclick="switchTab('analyze',this)"><i class="fas fa-search"></i> Image Analyzer <span class="badge-new"></span></div>
+    <div class="nav-item" data-tab="video" onclick="switchTab('video',this)"><i class="fas fa-film"></i> Video Detector <span class="badge-new"></span></div>
     <div class="nav-item" data-tab="news" onclick="switchTab('news',this)"><i class="fas fa-newspaper"></i> News Checker</div>
     <div class="nav-item" data-tab="askai" onclick="switchTab('askai',this)"><i class="fas fa-comments"></i> Ask AI <span class="badge-new"></span></div>
     <div class="nav-section-label">Learn</div>
@@ -586,7 +587,131 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 </div>
+<!-- VIDEO TAB -->
+<div class="tab-content" id="tab-video">
+  <div class="page-header">
+    <h1><span>Video</span> Deepfake Detector</h1>
+<p>Upload a video — 4 AI models analyze frames & temporal patterns to detect deepfakes</p>  </div>
 
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-video"></i> Upload Video</div>
+<div class="upload-zone" id="videoDropZone" onclick="document.getElementById('videoFileInput').click()" ondrop="handleVideoDrop(event)" ondragover="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">      <i class="fas fa-film"></i>
+      <h3>Drop video here or click to browse</h3>
+      <p>MP4, WEBM, MOV supported • Max 50MB recommended</p>
+    </div>
+    <input type="file" id="videoFileInput" accept="video/*" onchange="handleVideoFileSelect(event)" style="display:none">
+    <div id="videoPreviewWrap" style="display:none;margin-top:16px;text-align:center">
+      <video id="videoPreview" controls style="max-width:100%;max-height:280px;border-radius:var(--radius);border:1px solid var(--border)"></video>
+      <div style="margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <span id="videoFileName" style="font-size:.8rem;color:var(--text-secondary)"></span>
+        <button class="btn btn-outline btn-sm" onclick="clearVideo()"><i class="fas fa-times"></i> Clear</button>
+        <button class="btn btn-primary" onclick="startVideoAnalysis()"><i class="fas fa-bolt"></i> Analyze Video</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="card" style="margin-bottom:20px;font-size:.82rem;color:var(--text-secondary);line-height:1.9">
+    <div class="card-title"><i class="fas fa-info-circle"></i> How Video Analysis Works</div>
+    <div>🎞️ <strong>Frame Extraction</strong> — 8 key frames are extracted from your video in the browser</div>
+    <div>🤖 <strong>HuggingFace Model 1</strong> — <code>dima806/deepfake_vs_real_image_detection</code> classifies each frame</div>
+    <div>🧠 <strong>HuggingFace Model 2</strong> — <code>Wvolf/ViT-Deepfake-Detection</code> cross-validates each frame</div>
+    <div>✨ <strong>Gemini 1.5 Flash</strong> — Analyzes temporal artifacts, blinking patterns & facial inconsistencies in the full video</div>
+    <div>👁️ <strong>Sightengine</strong> — Dedicated deepfake + AI-generated video model (videos under 1 min)</div>
+    <div>📊 <strong>Combined Verdict</strong> — All 4 results are weighted and merged into a final confidence score</div>
+  </div>
+
+  <!-- Loader -->
+  <div id="videoAnalysisLoader" style="display:none;text-align:center;padding:40px">
+    <div class="loading-bar" style="margin-bottom:20px"></div>
+    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.9rem;margin-bottom:8px">ANALYZING VIDEO...</div>
+    <ul class="analysis-steps">
+      <li class="analysis-step active" id="vstep1"><span class="status-dot loading"></span> Extracting key frames from video...</li>
+      <li class="analysis-step" id="vstep2"><span class="status-dot loading"></span> Running HuggingFace Model 1 on frames...</li>
+      <li class="analysis-step" id="vstep3"><span class="status-dot loading"></span> Running HuggingFace Model 2 on frames...</li>
+      <li class="analysis-step" id="vstep4"><span class="status-dot loading"></span> Sending to Gemini 1.5 Flash for temporal analysis...</li>
+    <li class="analysis-step" id="vstep5"><span class="status-dot loading"></span> Checking Sightengine video...</li>
+      <li class="analysis-step" id="vstep6"><span class="status-dot loading"></span> Computing combined verdict...</li>
+    </ul>
+    <!-- Frame preview strip -->
+    <div id="frameStripWrap" style="display:none;margin-top:20px">
+      <div style="font-size:.75rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px">EXTRACTED FRAMES</div>
+      <div id="frameStrip" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="videoResultsSection" style="display:none">
+    <!-- Final Verdict -->
+    <div id="videoFinalVerdictCard" class="final-verdict" style="margin-bottom:20px">
+      <span class="verdict-icon" id="videoVerdictIcon">🎬</span>
+      <div class="verdict-label" id="videoVerdictLabel">ANALYZING...</div>
+      <div class="verdict-confidence" id="videoVerdictConf"></div>
+    </div>
+
+    <!-- Threat Meter -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fas fa-gauge-high"></i> Deepfake Risk Level</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:.8rem;color:var(--text-secondary)">Probability this video contains manipulated faces</span>
+        <span style="font-family:var(--font-mono);font-size:.8rem;color:var(--accent)" id="videoThreatPct">0%</span>
+      </div>
+      <div class="threat-track"><div class="threat-fill" id="videoThreatFill" style="width:0%"></div></div>
+      <div class="threat-labels"><span>Low</span><span>Medium</span><span>High</span><span>Critical</span></div>
+    </div>
+
+<!-- 4-Model Cards -->
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-robot"></i> HuggingFace #1</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">dima806 deepfake detector</div>
+        <div id="vHF1Result" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="vHF1Score" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-brain"></i> HuggingFace #2</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">Wvolf ViT deepfake detector</div>
+        <div id="vHF2Result" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="vHF2Score" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fab fa-google"></i> Gemini 1.5 Flash</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">Temporal + facial analysis</div>
+        <div id="vGeminiResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="vGeminiScore" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-eye"></i> Sightengine</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">Deepfake + GenAI video model</div>
+        <div id="vSEResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="vSEScore" style="margin-top:8px"></div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-top:4px">⚠️ Videos under 1 min only</div>
+      </div>
+    </div>
+
+    <!-- Frame Analysis Grid -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fas fa-film"></i> Frame-by-Frame Results</div>
+      <div id="frameResultsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px"></div>
+    </div>
+
+    <!-- Gemini Explanation -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fas fa-magnifying-glass"></i> Gemini Temporal Analysis</div>
+      <div id="vGeminiExplanation" style="font-size:.85rem;color:var(--text-secondary);line-height:1.8"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-share-nodes"></i> Actions</div>
+      <div class="action-buttons">
+        <button class="btn btn-outline" onclick="shareVideoWhatsApp()"><i class="fab fa-whatsapp"></i> Share Warning</button>
+        <button class="btn btn-outline" onclick="copyVideoResult()"><i class="fas fa-copy"></i> Copy Result</button>
+        <button class="btn btn-outline" onclick="analyzeAnotherVideo()"><i class="fas fa-redo"></i> Analyze Another</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- NEWS TAB -->
 <div class="tab-content" id="tab-news">
   <div class="page-header">
@@ -1780,6 +1905,395 @@ document.addEventListener('DOMContentLoaded', function(){
   window.addEventListener('dragover', e => e.preventDefault());
   window.addEventListener('drop', e => { e.preventDefault(); const f=e.dataTransfer?.files?.[0]; if(f&&f.type.startsWith('image/')){ switchTab('analyze'); processImageFile(f); } });
 });
+  // ============================================================
+// VIDEO DEEPFAKE DETECTION
+// ============================================================
+
+let currentVideoFile = null;
+let extractedFrames = [];
+
+function handleVideoDrop(e){
+  e.preventDefault();
+  handleDragLeave(e);
+  const f = e.dataTransfer?.files?.[0];
+  if(f && f.type.startsWith('video/')) loadVideoFile(f);
+  else alert('Please drop a video file (MP4, WEBM, MOV)');
+}
+
+function handleVideoFileSelect(e){
+  const f = e.target.files?.[0];
+  if(f) loadVideoFile(f);
+}
+
+function loadVideoFile(file){
+  currentVideoFile = file;
+  const url = URL.createObjectURL(file);
+  const vid = document.getElementById('videoPreview');
+  vid.src = url;
+  document.getElementById('videoFileName').textContent = file.name + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)';
+  document.getElementById('videoPreviewWrap').style.display = 'block';
+  document.getElementById('videoResultsSection').style.display = 'none';
+  document.getElementById('videoAnalysisLoader').style.display = 'none';
+}
+
+function clearVideo(){
+  currentVideoFile = null;
+  extractedFrames = [];
+  document.getElementById('videoPreview').src = '';
+  document.getElementById('videoPreviewWrap').style.display = 'none';
+  document.getElementById('videoResultsSection').style.display = 'none';
+  document.getElementById('videoFileInput').value = '';
+}
+
+function analyzeAnotherVideo(){ clearVideo(); }
+
+// ── Step helpers ──────────────────────────────────────────────
+function setVStep(n, state){ // state: active | done | error
+  const el = document.getElementById('vstep'+n);
+  if(!el) return;
+  const dot = el.querySelector('.status-dot');
+  dot.className = 'status-dot ' + state;
+  if(state==='done') el.classList.add('done');
+  else if(state==='active') el.classList.add('active');
+}
+
+// ── Frame Extraction ──────────────────────────────────────────
+function extractFrames(videoEl, count=8){
+  return new Promise((resolve)=>{
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const duration = videoEl.duration;
+    const frames = [];
+    let captured = 0;
+    canvas.width = 224; canvas.height = 224;
+
+    const captureAt = (time) => new Promise(res=>{
+      videoEl.currentTime = time;
+      videoEl.onseeked = ()=>{
+        ctx.drawImage(videoEl, 0, 0, 224, 224);
+        frames.push(canvas.toDataURL('image/jpeg', 0.8));
+        res();
+      };
+    });
+
+    (async()=>{
+      for(let i=0; i<count; i++){
+        const t = (duration / (count+1)) * (i+1);
+        await captureAt(t);
+      }
+      resolve(frames);
+    })();
+  });
+}
+
+// ── HuggingFace Frame Analysis ────────────────────────────────
+async function analyzeFrameHF(base64DataUrl, modelId, hfKey){
+  // Strip the data:image/jpeg;base64, prefix
+  const base64 = base64DataUrl.split(',')[1];
+  const blob = await (await fetch(base64DataUrl)).blob();
+  const resp = await fetch(`https://api-inference.huggingface.co/models/${modelId}`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${hfKey}`, 'Content-Type': 'application/octet-stream' },
+    body: blob
+  });
+  if(!resp.ok) throw new Error(`HF error: ${resp.status}`);
+  return await resp.json();
+}
+
+function scoreFromHFResult(result){
+  // Both models return [{label, score}] arrays
+  if(!Array.isArray(result)) return { label:'unknown', fakeScore:0.5 };
+  const fakeEntry = result.find(r=> /fake|deepfake|ai|artificial/i.test(r.label));
+  const realEntry = result.find(r=> /real|authentic|genuine/i.test(r.label));
+  if(fakeEntry) return { label: fakeEntry.label, fakeScore: fakeEntry.score };
+  if(realEntry) return { label: realEntry.label, fakeScore: 1 - realEntry.score };
+  return { label: result[0]?.label || 'unknown', fakeScore: result[0]?.score || 0.5 };
+}
+
+// ── Gemini Video Analysis via File API ────────────────────────
+async function analyzeVideoWithGemini(videoFile, geminiKey){
+  // Step 1: Upload file
+  const uploadResp = await fetch(
+    `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${geminiKey}`,
+    {
+      method: 'POST',
+      headers: {
+        'X-Goog-Upload-Command': 'start, upload, finalize',
+        'X-Goog-Upload-Header-Content-Length': videoFile.size,
+        'X-Goog-Upload-Header-Content-Type': videoFile.type || 'video/mp4',
+        'Content-Type': videoFile.type || 'video/mp4'
+      },
+      body: videoFile
+    }
+  );
+  if(!uploadResp.ok){
+    const err = await uploadResp.text();
+    throw new Error('Gemini upload failed: ' + err);
+  }
+  const uploadData = await uploadResp.json();
+  const fileUri = uploadData.file?.uri;
+  if(!fileUri) throw new Error('No file URI returned from Gemini Files API');
+
+  // Step 2: Wait briefly for processing
+  await new Promise(r=>setTimeout(r,3000));
+
+  // Step 3: Analyze
+  const prompt = `You are a deepfake and AI-generated video detection expert. Carefully analyze this video and determine if it is REAL, a DEEPFAKE (face-swapped/manipulated), or fully AI-GENERATED.
+
+Look for these specific indicators:
+1. Facial boundary artifacts — blurring or halo effects around the face edges
+2. Unnatural blinking patterns — too rare, too frequent, or robotic blinking
+3. Temporal inconsistencies — face flickering between frames
+4. Lighting mismatches — face lighting not matching background lighting
+5. Teeth/eye rendering artifacts — common in AI-generated faces
+6. Unnatural hair or earring behavior — common deepfake failure point
+7. Background coherence — AI-generated videos often have unstable backgrounds
+8. Skin texture consistency — deepfakes often lack natural pore/texture variation
+
+Respond ONLY in this exact JSON format (no markdown, no extra text):
+{
+  "verdict": "DEEPFAKE" or "AI_GENERATED" or "REAL" or "SUSPICIOUS",
+  "confidence": 0-100,
+  "clues": ["clue1","clue2","clue3"],
+  "explanation": "2-3 sentence explanation of your findings"
+}`;
+
+  const analyzeResp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+    {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { fileData: { mimeType: videoFile.type || 'video/mp4', fileUri: fileUri }},
+            { text: prompt }
+          ]
+        }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 512 }
+      })
+    }
+  );
+  if(!analyzeResp.ok) throw new Error('Gemini analysis failed: ' + analyzeResp.status);
+  const analyzeData = await analyzeResp.json();
+  const raw = analyzeData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+  const clean = raw.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
+}
+
+// ── Sightengine Video Analysis ────────────────────────────────
+async function analyzeVideoWithSightengine(videoFile, seUser, seSecret){
+  const formData = new FormData();
+  formData.append('media', videoFile, videoFile.name);
+  formData.append('models', 'deepfake,genai');
+  formData.append('api_user', seUser);
+  formData.append('api_secret', seSecret);
+  const resp = await fetch('https://api.sightengine.com/1.0/video/check-sync.json', {
+    method: 'POST',
+    body: formData
+  });
+  if(!resp.ok) throw new Error('Sightengine video error: ' + resp.status);
+  return await resp.json();
+}
+
+// ── Progress Bar Helper ───────────────────────────────────────
+function makeProgressBar(score, color){
+  return `<div class="progress-bar"><div class="progress-fill" style="width:${Math.round(score*100)}%;background:${color}"></div></div>
+  <div style="font-size:.75rem;color:var(--text-muted);text-align:right">${Math.round(score*100)}%</div>`;
+}
+
+// ── MAIN ANALYSIS ORCHESTRATOR ────────────────────────────────
+async function startVideoAnalysis(){
+  const keys = getKeys();
+  if(!keys.gemini){ alert('Please add your Gemini API key in Settings'); return; }
+  if(!keys.hf){ alert('Please add your HuggingFace API key in Settings'); return; }
+  if(!currentVideoFile){ alert('Please upload a video first'); return; }
+// Show loader, hide results
+  document.getElementById('videoAnalysisLoader').style.display = 'block';
+  document.getElementById('videoResultsSection').style.display = 'none';
+  document.getElementById('frameStripWrap').style.display = 'none';
+  document.getElementById('frameStrip').innerHTML = '';
+ setVStep(1,'active'); setVStep(2,''); setVStep(3,''); setVStep(4,''); setVStep(5,''); setVStep(6,'');
+
+  try {
+    // ── 1. Extract Frames ──────────────────────────────────────
+    const videoEl = document.getElementById('videoPreview');
+    // Make sure video metadata is loaded
+    await new Promise(r=>{ if(videoEl.readyState>=2) r(); else videoEl.onloadedmetadata=r; });
+    extractedFrames = await extractFrames(videoEl, 8);
+    setVStep(1,'done');
+
+    // Show frame strip
+    document.getElementById('frameStripWrap').style.display = 'block';
+    extractedFrames.forEach((f,i)=>{
+      const img = document.createElement('img');
+      img.src = f;
+      img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border)';
+      document.getElementById('frameStrip').appendChild(img);
+    });
+
+    // ── 2. HuggingFace Model 1 ─────────────────────────────────
+    setVStep(2,'active');
+    const HF_MODEL_1 = 'dima806/deepfake_vs_real_image_detection';
+    let hf1Scores = [];
+    for(const frame of extractedFrames){
+      try{
+        const res = await analyzeFrameHF(frame, HF_MODEL_1, keys.hf);
+        hf1Scores.push(scoreFromHFResult(res).fakeScore);
+        await new Promise(r=>setTimeout(r,200)); // rate limit buffer
+      } catch(e){ hf1Scores.push(0.5); }
+    }
+    const hf1Avg = hf1Scores.reduce((a,b)=>a+b,0)/hf1Scores.length;
+    setVStep(2,'done');
+
+    // ── 3. HuggingFace Model 2 ─────────────────────────────────
+    setVStep(3,'active');
+    const HF_MODEL_2 = 'Wvolf/ViT-Deepfake-Detection';
+    let hf2Scores = [];
+    for(const frame of extractedFrames){
+      try{
+        const res = await analyzeFrameHF(frame, HF_MODEL_2, keys.hf);
+        hf2Scores.push(scoreFromHFResult(res).fakeScore);
+        await new Promise(r=>setTimeout(r,200));
+      } catch(e){ hf2Scores.push(0.5); }
+    }
+    const hf2Avg = hf2Scores.reduce((a,b)=>a+b,0)/hf2Scores.length;
+    setVStep(3,'done');
+
+    // ── 4. Gemini Video Analysis ───────────────────────────────
+    setVStep(4,'active');
+    let geminiResult = { verdict:'UNKNOWN', confidence:50, clues:[], explanation:'Gemini analysis unavailable.' };
+    try{
+      geminiResult = await analyzeVideoWithGemini(currentVideoFile, keys.gemini);
+    } catch(e){
+      console.error('Gemini video error:', e);
+      geminiResult.explanation = 'Gemini analysis failed: ' + e.message + '. Frame analysis only.';
+    }
+   setVStep(4,'done');
+
+    // ── 5. Sightengine Video ───────────────────────────────────
+    setVStep(5,'active');
+    let seVideoResult = null;
+    let seFakeScore = 0.5;
+    if(keys.seUser && keys.seSecret){
+      try {
+        seVideoResult = await analyzeVideoWithSightengine(currentVideoFile, keys.seUser, keys.seSecret);
+        const seFrames = seVideoResult?.data || [];
+        if(seFrames.length > 0){
+          const deepfakeAvg = seFrames.reduce((a,f)=> a + (f.deepfake?.score||0), 0) / seFrames.length;
+          const genaiAvg    = seFrames.reduce((a,f)=> a + (f.genai?.ai_generated||0), 0) / seFrames.length;
+          seFakeScore = Math.max(deepfakeAvg, genaiAvg);
+        }
+      } catch(e){ console.error('Sightengine video error:', e); }
+    }
+    setVStep(5,'done');
+
+    // ── 6. Compute Combined Verdict ────────────────────────────
+    setVStep(6,'active');
+    const geminiScore = geminiResult.confidence / 100;
+    const geminiIsFake = /DEEPFAKE|AI_GENERATED|SUSPICIOUS/i.test(geminiResult.verdict);
+    const geminiFakeScore = geminiIsFake ? geminiScore : (1 - geminiScore);
+
+    const hasSE = seVideoResult !== null;
+const combinedFakeScore = hasSE
+  ? (geminiFakeScore * 0.40) + (hf1Avg * 0.20) + (hf2Avg * 0.20) + (seFakeScore * 0.20)
+  : (geminiFakeScore * 0.50) + (hf1Avg * 0.25) + (hf2Avg * 0.25); // graceful fallback
+    const combinedPct = Math.round(combinedFakeScore * 100);
+
+    let finalVerdict, verdictIcon, verdictClass;
+    if(combinedPct >= 70){ finalVerdict='DEEPFAKE / AI-GENERATED'; verdictIcon='🚨'; verdictClass='deepfake'; }
+    else if(combinedPct >= 45){ finalVerdict='SUSPICIOUS'; verdictIcon='⚠️'; verdictClass='deepfake'; }
+    else { finalVerdict='LIKELY REAL'; verdictIcon='✅'; verdictClass='real'; }
+
+   setVStep(6,'done');
+    await new Promise(r=>setTimeout(r,400));
+
+    // ── Render Results ─────────────────────────────────────────
+    document.getElementById('videoAnalysisLoader').style.display = 'none';
+    document.getElementById('videoResultsSection').style.display = 'block';
+
+    // Final verdict
+    const vCard = document.getElementById('videoFinalVerdictCard');
+    vCard.className = 'final-verdict ' + verdictClass;
+    document.getElementById('videoVerdictIcon').textContent = verdictIcon;
+    document.getElementById('videoVerdictLabel').textContent = finalVerdict;
+    document.getElementById('videoVerdictConf').textContent = `Combined confidence: ${combinedPct}% probability of manipulation`;
+
+    // Threat meter
+    document.getElementById('videoThreatPct').textContent = combinedPct + '%';
+    document.getElementById('videoThreatFill').style.width = combinedPct + '%';
+
+    // HF1 card
+    const hf1Color = hf1Avg > 0.5 ? 'var(--danger)' : 'var(--success)';
+    document.getElementById('vHF1Result').innerHTML = `<span style="color:${hf1Color}">${hf1Avg>0.5?'🚨 Likely Fake':'✅ Likely Real'}</span>`;
+    document.getElementById('vHF1Score').innerHTML = makeProgressBar(hf1Avg, hf1Color) + `<div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Avg across ${hf1Scores.length} frames</div>`;
+
+    // HF2 card
+    const hf2Color = hf2Avg > 0.5 ? 'var(--danger)' : 'var(--success)';
+    document.getElementById('vHF2Result').innerHTML = `<span style="color:${hf2Color}">${hf2Avg>0.5?'🚨 Likely Fake':'✅ Likely Real'}</span>`;
+    document.getElementById('vHF2Score').innerHTML = makeProgressBar(hf2Avg, hf2Color) + `<div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Avg across ${hf2Scores.length} frames</div>`;
+
+   // Gemini card
+    const gColor = geminiIsFake ? 'var(--danger)' : 'var(--success)';
+    document.getElementById('vGeminiResult').innerHTML = `<span style="color:${gColor}">${geminiResult.verdict}</span>`;
+    document.getElementById('vGeminiScore').innerHTML = makeProgressBar(geminiFakeScore, gColor);
+
+    // Sightengine card
+    const seColor = seFakeScore > 0.5 ? 'var(--danger)' : 'var(--success)';
+    document.getElementById('vSEResult').innerHTML = seVideoResult
+      ? `<span style="color:${seColor}">${seFakeScore>0.5?'🚨 Likely Fake':'✅ Likely Real'}</span>`
+      : `<span style="color:var(--warning)">⚠️ Skipped (no key or video &gt;1min)</span>`;
+    if(seVideoResult) document.getElementById('vSEScore').innerHTML = makeProgressBar(seFakeScore, seColor);
+
+    // Gemini explanation
+    let explHTML = `<p style="margin-bottom:10px">${geminiResult.explanation || ''}</p>`;
+    if(geminiResult.clues?.length){
+      explHTML += '<div style="margin-top:8px">';
+      geminiResult.clues.forEach(c=>{ explHTML += `<span class="clue-tag"><i class="fas fa-circle-dot"></i>${c}</span>`; });
+      explHTML += '</div>';
+    }
+    document.getElementById('vGeminiExplanation').innerHTML = explHTML;
+
+    // Frame-by-frame grid
+    const grid = document.getElementById('frameResultsGrid');
+    grid.innerHTML = '';
+    extractedFrames.forEach((f,i)=>{
+      const s1 = hf1Scores[i]||0.5, s2 = hf2Scores[i]||0.5;
+      const avg = (s1+s2)/2;
+      const c = avg>0.6?'var(--danger)':avg>0.4?'var(--warning)':'var(--success)';
+      grid.innerHTML += `
+        <div style="border:1px solid ${c};border-radius:8px;overflow:hidden;text-align:center">
+          <img src="${f}" style="width:100%;height:90px;object-fit:cover">
+          <div style="padding:6px;font-size:.7rem">
+            <div style="color:${c};font-weight:700">${avg>0.6?'FAKE':avg>0.4?'SUSPICIOUS':'REAL'}</div>
+            <div style="color:var(--text-muted)">HF1: ${Math.round(s1*100)}% | HF2: ${Math.round(s2*100)}%</div>
+          </div>
+        </div>`;
+    });
+
+    document.getElementById('videoResultsSection').scrollIntoView({behavior:'smooth'});
+
+  } catch(err){
+    document.getElementById('videoAnalysisLoader').style.display = 'none';
+    alert('Analysis error: ' + err.message + '\n\nCheck your API keys and try again.');
+    console.error(err);
+  }
+}
+
+function shareVideoWhatsApp(){
+  const verdict = document.getElementById('videoVerdictLabel')?.textContent || '';
+  const pct = document.getElementById('videoThreatPct')?.textContent || '';
+  const msg = `⚠️ NeuralEye Video Analysis\n🎬 Verdict: ${verdict}\n📊 Manipulation Probability: ${pct}\nVerified using 3 AI models (Gemini + 2× HuggingFace)\n\nVerify before you share. Try NeuralEye free.`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function copyVideoResult(){
+  const verdict = document.getElementById('videoVerdictLabel')?.textContent || '';
+  const pct = document.getElementById('videoThreatPct')?.textContent || '';
+  const exp = document.getElementById('vGeminiExplanation')?.innerText || '';
+  const txt = `NeuralEye Video Deepfake Detection\nVerdict: ${verdict}\nManipulation Probability: ${pct}\n\n${exp}`;
+  navigator.clipboard.writeText(txt).then(()=>alert('Result copied!'));
+}
 </script>
 </body>
 </html>
