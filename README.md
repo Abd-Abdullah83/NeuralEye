@@ -321,7 +321,8 @@ Attribution appreciated but not required.
 <br/>
 
 [![GitHub](https://img.shields.io/badge/GitHub-Abd--Abdullah83-181717?style=for-the-badge&logo=github)](https://github.com/Abd-Abdullah83)
-[![Portfolio](https://img.shields.io/badge/Portfolio-@Abdullah-FAST-NUCES-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://abd-abdullah83.github.io/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-abdullah--tahir--ds-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/abdullah-tahir-ds)
+[![Portfolio](https://img.shields.io/badge/Portfolio-abd--abdullah83.github.io-00e5ff?style=for-the-badge&logo=googlechrome&logoColor=black)](https://abd-abdullah83.github.io)
 
 <br/>
 
