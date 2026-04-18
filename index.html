@@ -41,7 +41,6 @@
 <meta name="twitter:creator" content="@Abd_Abdullah83">
   
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -361,26 +360,26 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-text">Neural<span>Eye</span></div>
-<div class="logo-sub" data-key="logoSub">AI Detection Platform</div>
+    <div class="logo-sub">AI Detection Platform</div>
   </div>
   <div class="sidebar-time">
     <div class="time" id="clockDisplay">--:--:--</div>
     <div id="dateDisplay">Loading...</div>
   </div>
   <nav class="sidebar-nav">
-   <div class="nav-section-label" data-key="secMain">Main</div>
-   <div class="nav-item active" data-tab="home" onclick="switchTab('home',this)"><i class="fas fa-home"></i> <span data-key="navHome">Home</span></div>
-<div class="nav-item" data-tab="analyze" onclick="switchTab('analyze',this)"><i class="fas fa-search"></i> <span data-key="navAnalyze">Image Analyzer</span> <span class="badge-new"></span></div>
-<div class="nav-item" data-tab="video" onclick="switchTab('video',this)"><i class="fas fa-film"></i> <span data-key="navVideo">Video Detector</span> <span class="badge-new"></span></div>
-<div class="nav-item" data-tab="news" onclick="switchTab('news',this)"><i class="fas fa-newspaper"></i> <span data-key="navNews">News Checker</span></div>
-<div class="nav-item" data-tab="askai" onclick="switchTab('askai',this)"><i class="fas fa-comments"></i> <span data-key="navAskAI">Ask AI</span> <span class="badge-new"></span></div>
-  <div class="nav-section-label" data-key="secLearn">Learn</div>
-<div class="nav-item" data-tab="education" onclick="switchTab('education',this)"><i class="fas fa-graduation-cap"></i> <span data-key="navEducation">Education</span></div>
-<div class="nav-item" data-tab="timeline" onclick="switchTab('timeline',this)"><i class="fas fa-clock-rotate-left"></i> <span data-key="navTimeline">Timeline</span></div>
-<div class="nav-section-label" data-key="secEngage">Engage</div>
-<div class="nav-item" data-tab="pledge" onclick="switchTab('pledge',this)"><i class="fas fa-handshake"></i> <span data-key="navPledge">Digital Pledge</span></div>
-<div class="nav-section-label" data-key="secSystem">System</div>
-<div class="nav-item" data-tab="settings" onclick="switchTab('settings',this)"><i class="fas fa-cog"></i> <span data-key="navSettings">Settings & APIs</span></div>
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" data-tab="home" onclick="switchTab('home',this)"><i class="fas fa-home"></i> Home</div>
+    <div class="nav-item" data-tab="analyze" onclick="switchTab('analyze',this)"><i class="fas fa-search"></i> Image Analyzer <span class="badge-new"></span></div>
+    <div class="nav-item" data-tab="video" onclick="switchTab('video',this)"><i class="fas fa-film"></i> Video Detector <span class="badge-new"></span></div>
+    <div class="nav-item" data-tab="news" onclick="switchTab('news',this)"><i class="fas fa-newspaper"></i> News Checker</div>
+    <div class="nav-item" data-tab="askai" onclick="switchTab('askai',this)"><i class="fas fa-comments"></i> Ask AI <span class="badge-new"></span></div>
+    <div class="nav-section-label">Learn</div>
+    <div class="nav-item" data-tab="education" onclick="switchTab('education',this)"><i class="fas fa-graduation-cap"></i> Education</div>
+    <div class="nav-item" data-tab="timeline" onclick="switchTab('timeline',this)"><i class="fas fa-clock-rotate-left"></i> Timeline</div>
+    <div class="nav-section-label">Engage</div>
+    <div class="nav-item" data-tab="pledge" onclick="switchTab('pledge',this)"><i class="fas fa-handshake"></i> Digital Pledge</div>
+    <div class="nav-section-label">System</div>
+    <div class="nav-item" data-tab="settings" onclick="switchTab('settings',this)"><i class="fas fa-cog"></i> Settings & APIs</div>
   </nav>
   <div class="sidebar-bottom">
     <div class="toggle-row">
@@ -410,18 +409,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- HOME TAB -->
 <div class="tab-content active" id="tab-home">
   <div class="page-header">
-   <h1><span data-key="homeWelcome">Welcome to</span> <span>NeuralEye</span></h1>
-<p id="homeSubtitle" data-key="homeSubtitle">Your AI-powered digital truth detector</p>
+    <h1>Welcome to <span>NeuralEye</span></h1>
+    <p id="homeSubtitle">Your AI-powered digital truth detector</p>
   </div>
   <div class="fact-card" style="margin-bottom:24px">
-<div class="card-title"><i class="fas fa-lightbulb"></i> <span data-key="factTitle">Fact of the Day</span></div>
+    <div class="card-title"><i class="fas fa-lightbulb"></i> Fact of the Day</div>
     <p id="factOfDay" style="font-size:.95rem;line-height:1.7"></p>
     <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px" id="factSource"></p>
   </div>
   <div class="grid-3" style="margin-bottom:24px">
-    <div class="stat-card"><div class="stat-value" id="statAnalyzed">0</div><div class="stat-label" data-key="statAnalyzed">Images Analyzed</div>
-    <div class="stat-card"><div class="stat-value" id="statPledges">—</div><div class="stat-label" data-key="statPledges">Pledges Made</div>
-    <div class="stat-card"><div class="stat-value">3</div><<div class="stat-label" data-key="statAPIs">Detection APIs</div>
+    <div class="stat-card"><div class="stat-value" id="statAnalyzed">0</div><div class="stat-label">Images Analyzed</div></div>
+    <div class="stat-card"><div class="stat-value" id="statPledges">—</div><div class="stat-label">Pledges Made</div></div>
+    <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Detection APIs</div></div>
   </div>
   <div class="card" style="margin-bottom:20px">
     <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
@@ -1103,66 +1102,12 @@ function switchTab(name, el){
 // ============================================================
 // LANGUAGE
 // ============================================================
-const T = {
-  en: {
-    logoSub:      'AI Detection Platform',
-    secMain:      'Main',
-    secLearn:     'Learn',
-    secEngage:    'Engage',
-    secSystem:    'System',
-    navHome:      'Home',
-    navAnalyze:   'Image Analyzer',
-    navVideo:     'Video Detector',
-    navNews:      'News Checker',
-    navAskAI:     'Ask AI',
-    navEducation: 'Education',
-    navTimeline:  'Timeline',
-    navPledge:    'Digital Pledge',
-    navSettings:  'Settings & APIs',
-    homeWelcome:  'Welcome to',
-    homeSubtitle: 'Your AI-powered digital truth detector',
-    factTitle:    'Fact of the Day',
-    statAnalyzed: 'Images Analyzed',
-    statPledges:  'Pledges Made',
-    statAPIs:     'Detection APIs',
-  },
-  ur: {
-    logoSub:      'AI پتہ لگانے کا پلیٹ فارم',
-    secMain:      'مرکزی',
-    secLearn:     'سیکھیں',
-    secEngage:    'شرکت کریں',
-    secSystem:    'نظام',
-    navHome:      'ہوم',
-    navAnalyze:   'تصویر تجزیہ کار',
-    navVideo:     'ویڈیو ڈیٹیکٹر',
-    navNews:      'خبر جانچ',
-    navAskAI:     'AI سے پوچھیں',
-    navEducation: 'تعلیم',
-    navTimeline:  'ٹائم لائن',
-    navPledge:    'ڈیجیٹل عہد',
-    navSettings:  'ترتیبات اور APIs',
-    homeWelcome:  'خوش آمدید',
-    homeSubtitle: 'آپ کا AI سے چلنے والا ڈیجیٹل سچائی کا آلہ',
-    factTitle:    'آج کی حقیقت',
-    statAnalyzed: 'تجزیہ شدہ تصاویر',
-    statPledges:  'کیے گئے عہد',
-    statAPIs:     'ڈیٹیکشن APIs',
-  }
-};
-
-function setLang(lang) {
+function setLang(lang){
   currentLang = lang;
-  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
-  document.getElementById('btnUR').classList.toggle('active', lang === 'ur');
-  document.body.style.direction = lang === 'ur' ? 'rtl' : 'ltr';
-  document.body.style.fontFamily = lang === 'ur'
-    ? "'Noto Nastaliq Urdu', serif"
-    : "var(--font-sans)";
-  document.querySelectorAll('[data-key]').forEach(el => {
-    const key = el.dataset.key;
-    if (T[lang]?.[key]) el.textContent = T[lang][key];
-  });
-  localStorage.setItem('ne_lang', lang);
+  document.getElementById('btnEN').classList.toggle('active', lang==='en');
+  document.getElementById('btnUR').classList.toggle('active', lang==='ur');
+  document.body.style.direction = lang==='ur' ? 'rtl' : 'ltr';
+  document.getElementById('homeSubtitle').textContent = lang==='en' ? 'Your AI-powered digital truth detector' : 'آپ کا AI سے چلنے والا ڈیجیٹل سچائی کا آلہ';
 }
 
 // ============================================================
@@ -1955,9 +1900,6 @@ document.addEventListener('DOMContentLoaded', function(){
     const btn = document.getElementById('voiceToggleBtn');
     if(btn){ btn.innerHTML = '<i class="fas fa-volume-xmark"></i> OFF'; btn.style.background='var(--text-muted)'; btn.style.boxShadow='none'; }
   }
-  // Restore language
-  const savedLang = localStorage.getItem('ne_lang') || 'en';
-  setLang(savedLang);
   // Drag-over for whole window
   window.addEventListener('dragover', e => e.preventDefault());
   window.addEventListener('drop', e => { e.preventDefault(); const f=e.dataTransfer?.files?.[0]; if(f&&f.type.startsWith('image/')){ switchTab('analyze'); processImageFile(f); } });
