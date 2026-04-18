@@ -1,279 +1,360 @@
 <div align="center">
 
-```
-███╗   ██╗███████╗██╗   ██╗██████╗  █████╗ ██╗     ███████╗██╗   ██╗███████╗
-████╗  ██║██╔════╝██║   ██║██╔══██╗██╔══██╗██║     ██╔════╝╚██╗ ██╔╝██╔════╝
-██╔██╗ ██║█████╗  ██║   ██║██████╔╝███████║██║     █████╗   ╚████╔╝ █████╗  
-██║╚██╗██║██╔══╝  ██║   ██║██╔══██╗██╔══██║██║     ██╔══╝    ╚██╔╝  ██╔══╝  
-██║ ╚████║███████╗╚██████╔╝██║  ██║██║  ██║███████╗███████╗   ██║   ███████╗
-╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ╚══════╝
-                         AI DETECTION PLATFORM  •  v3.0
-```
+<!-- Animated SVG Banner -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00e5ff,50:7c3aed,100:00e5ff&height=200&section=header&text=NeuralEye&fontSize=80&fontColor=ffffff&fontAlignY=38&desc=AI%20Deepfake%20%26%20Image%20Detection%20Platform&descAlignY=58&descSize=20&animation=fadeIn" width="100%"/>
 
-**Detect deepfakes. Verify news. Fight misinformation.**  
-*Powered by Gemini · HuggingFace · Sightengine*
+<!-- Animated typing badge -->
+<a href="https://abd-abdullah83.github.io/NeuralEye/index.html">
+  <img src="https://readme-typing-svg.demolab.com?font=Space+Mono&size=22&pause=1000&color=00E5FF&center=true&vCenter=true&width=700&lines=Free+AI+Deepfake+Detector;Fake+News+Checker+for+Pakistan;3+AI+Engines+%E2%80%94+1+Verdict;Verify+Before+You+Share+%F0%9F%9B%A1%EF%B8%8F" alt="Typing SVG" />
+</a>
 
----
+<br/>
 
-![Version](https://img.shields.io/badge/version-3.0-00e5ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDEuNDEtMS40MUwxMCAxNC4xN2w3LjU5LTcuNTlMMTkgOGwtOSA5eiIvPjwvc3ZnPg==)
-![Status](https://img.shields.io/badge/status-live-10b981?style=for-the-badge)
-![License](https://img.shields.io/badge/license-MIT-7c3aed?style=for-the-badge)
-![Made in Pakistan](https://img.shields.io/badge/made%20in-Pakistan%20🇵🇰-00e5ff?style=for-the-badge)
-![No Server](https://img.shields.io/badge/no%20server-100%25%20client--side-f59e0b?style=for-the-badge)
+<!-- Badges Row 1 -->
+<img src="https://img.shields.io/badge/Status-Live%20%F0%9F%9F%A2-00e5ff?style=for-the-badge&labelColor=080b14" />
+<img src="https://img.shields.io/badge/Version-3.0-7c3aed?style=for-the-badge&labelColor=080b14" />
+<img src="https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge&labelColor=080b14" />
+<img src="https://img.shields.io/badge/Made%20in-Pakistan%20%F0%9F%87%B5%F0%9F%87%B0-10b981?style=for-the-badge&labelColor=080b14" />
+
+<br/><br/>
+
+<!-- Badges Row 2 -->
+<img src="https://img.shields.io/badge/Gemini%202.5-Flash%20Lite-4285F4?style=flat-square&logo=google&logoColor=white" />
+<img src="https://img.shields.io/badge/HuggingFace-Inference%20API-FF9D00?style=flat-square&logo=huggingface&logoColor=white" />
+<img src="https://img.shields.io/badge/Sightengine-GenAI%20Model-ef4444?style=flat-square" />
+<img src="https://img.shields.io/badge/No%20Server-100%25%20Client%20Side-10b981?style=flat-square" />
+<img src="https://img.shields.io/badge/No%20Signup-Free%20Forever-7c3aed?style=flat-square" />
+
+<br/><br/>
+
+<!-- Live Demo Button -->
+<a href="https://abd-abdullah83.github.io/NeuralEye/index.html">
+  <img src="https://img.shields.io/badge/%F0%9F%9A%80%20%20LIVE%20DEMO%20%E2%80%94%20Try%20NeuralEye%20Now-00e5ff?style=for-the-badge&labelColor=080b14&color=00e5ff" height="40"/>
+</a>
 
 </div>
 
 ---
 
-## ✨ What is NeuralEye?
+<!-- SCREENSHOT / PREVIEW SECTION -->
+<div align="center">
 
-> *"Only 26% of people can reliably tell the difference between real and AI-generated faces."*
-> — Nature Communications, 2022
-
-**NeuralEye** is a single-file, zero-installation AI detection platform that brings the power of three AI providers into one sleek dark-mode interface. Upload a photo and NeuralEye triangulates verdicts from **Google Gemini**, **HuggingFace**, and **Sightengine** — then renders a confidence chart, threat-level meter, and visual clues explaining *why* it reached its verdict.
-
-No backend. No data collection. No installation. Just open the HTML file and go.
-
----
-
-## 🚀 Features at a Glance
-
-| Module | What It Does |
-|--------|-------------|
-| 🔍 **AI Image Analyzer** | Detects AI-generated images & deepfakes using 3 AI providers simultaneously |
-| 📰 **News Verifier** | Cross-references headlines, URLs, and screenshots for misinformation |
-| 🎓 **Education Hub** | Explains deepfakes, detection tips, and Pakistan-specific context |
-| 📅 **Timeline** | Global & Pakistani misinformation incidents from 2017 to present |
-| 🤝 **Pledge Wall** | Community pledge to verify before sharing — tracked via JSONBin |
-| 🤖 **Ask AI** | Multi-turn Gemini-powered conversational AI assistant |
-| ⚙️ **Settings** | API key management, theme switcher, accent colors, voice controls |
-
----
-
-## 🎯 Core Capabilities
-
-### 🔍 Triple-Engine Image Analysis
-NeuralEye doesn't rely on a single opinion. It fires all three simultaneously:
+### 🖥️ Platform Preview
 
 ```
-Image Input
+╔══════════════════════════════════════════════════════════════════╗
+║   NeuralEye │ AI Detection Platform                   🌙 Dark   ║
+╠══════════════╦═══════════════════════════════════════════════════╣
+║  🏠 Home     ║                                                   ║
+║  🔍 Analyze  ║   ╔═══════════════════════════════════════╗      ║
+║  🎬 Video    ║   ║  🤖  AI GENERATED                     ║      ║
+║  📰 News     ║   ║  Combined AI Score: 94%               ║      ║
+║  💬 Ask AI   ║   ║  ██████████████████████░░  CRITICAL   ║      ║
+║  ─────────── ║   ╚═══════════════════════════════════════╝      ║
+║  🎓 Learn    ║                                                   ║
+║  🕐 Timeline ║   Gemini  ████████████ 91%                       ║
+║  🤝 Pledge   ║   HuggingFace ██████████ 96%                     ║
+║  ⚙️ Settings ║   Sightengine █████████ 94%                      ║
+╚══════════════╩═══════════════════════════════════════════════════╝
+```
+
+</div>
+
+---
+
+## ⚡ What is NeuralEye?
+
+**NeuralEye** is a **free, fully client-side AI detection platform** built for Pakistan's digital safety. It uses **3 AI engines simultaneously** to detect whether any image or video is real, AI-generated, or a deepfake — in seconds, with no signup required.
+
+> *"96% of deepfakes target non-consenting women. Pakistan has 50M+ WhatsApp users. Misinformation spreads before verification. NeuralEye was built to change that."*
+
+---
+
+## 🏆 Features at a Glance
+
+<div align="center">
+
+| Feature | Description | Status |
+|:---:|:---|:---:|
+| 🖼️ **Image Analyzer** | Upload any image — 3 AI engines classify it as Real, AI-Generated, or Deepfake | ✅ Live |
+| 🎬 **Video Detector** | Extract 8 frames + full temporal analysis via 4 AI models | ✅ Live |
+| 📰 **News Checker** | Verify headlines, articles, or screenshots against trusted sources | ✅ Live |
+| 💬 **Ask AI** | Chat with Gemini for education, health, science & daily questions | ✅ Live |
+| 📊 **Confidence Chart** | Visual bar chart of every AI engine's score per analysis | ✅ Live |
+| 🔴 **Threat Meter** | 0–100% danger level if fake content is shared publicly | ✅ Live |
+| 📄 **PDF Export** | Full forensics report download in one click | ✅ Live |
+| 📱 **WhatsApp Share** | One-tap share of detection result for public awareness | ✅ Live |
+| 🔊 **Voice I/O** | Speak your question, hear results read aloud | ✅ Live |
+| 🌙 **Dark / Light Mode** | Full theme support with custom accent colors | ✅ Live |
+| 🇵🇰 **Urdu Support** | Full RTL Urdu translation across the sidebar and UI | ✅ Live |
+| 🤝 **Digital Pledge** | Community commitment to verify-before-sharing | ✅ Live |
+
+</div>
+
+---
+
+## 🧠 How Detection Works
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    YOUR IMAGE / VIDEO                       │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+           ┌────────────┼────────────┐
+           ▼            ▼            ▼
+   ┌──────────────┐ ┌──────────┐ ┌─────────────────┐
+   │  GEMINI 2.5  │ │HUGGING   │ │  SIGHTENGINE    │
+   │  Flash Lite  │ │  FACE    │ │  GenAI Model    │
+   │              │ │sdxl-det. │ │                 │
+   │ Visual reaso-│ │Binary    │ │ AI probability  │
+   │ ning + clues │ │classify  │ │ scoring API     │
+   └──────┬───────┘ └────┬─────┘ └───────┬─────────┘
+          │              │               │
+          └──────────────┼───────────────┘
+                         ▼
+              ┌────────────────────┐
+              │  WEIGHTED AVERAGE  │
+              │  COMBINED VERDICT  │
+              │  + Threat Level    │
+              └────────────────────┘
+```
+
+### 🎬 Video Analysis Pipeline
+
+```
+Video File
     │
-    ├──► 🔵 Google Gemini 2.5 Flash   →  Visual reasoning + clue extraction
-    ├──► 🟠 HuggingFace Inference     →  Binary AI/Real classification score  
-    └──► 🟣 Sightengine API           →  Deepfake probability score
-              │
-              ▼
-       Combined Verdict Engine
-              │
-    ┌─────────┼─────────┐
-    ▼         ▼         ▼
-  REAL      AI GEN    DEEPFAKE
-```
-
-Each analysis produces:
-- **Final Verdict** with confidence score
-- **Threat Level Meter** — danger to public trust if shared
-- **Detected Clues** — e.g., unnatural hands, glassy eyes, lighting inconsistency
-- **Confidence Chart** (Chart.js bar visualization)
-- **Gemini Explanation** — plain-language reasoning
-
-### 📰 News Verifier  
-Three input modes for maximum flexibility:
-- 📝 **Text / Headline** — paste news directly
-- 🔗 **Article URL** — link to any web article  
-- 🖼️ **Screenshot** — upload an image of a news post
-
-### 🤖 Ask AI Chatbot
-A full multi-turn conversational assistant powered by Gemini 2.5 Flash — tuned for Pakistani users with locally relevant examples. Covers education, health, science, technology, career guidance, and current affairs.
-
----
-
-## 🏗️ Tech Stack
-
-```
-┌──────────────────────────────────────────────────┐
-│              NEURALEYE TECH STACK                │
-├──────────────────┬───────────────────────────────┤
-│  AI / APIs       │  Gemini 2.5 Flash Lite         │
-│                  │  HuggingFace Inference API      │
-│                  │  Sightengine Vision API         │
-│                  │  NewsAPI                        │
-│                  │  JSONBin (pledge storage)       │
-├──────────────────┼───────────────────────────────┤
-│  Visualization   │  Chart.js 4.4                  │
-│  Export          │  jsPDF 2.5 + html2canvas       │
-│  Typography      │  Space Mono · DM Sans          │
-│  Icons           │  Font Awesome 6.5              │
-├──────────────────┼───────────────────────────────┤
-│  Architecture    │  100% Client-Side HTML/CSS/JS  │
-│                  │  Zero build step, zero server  │
-│                  │  localStorage for persistence  │
-└──────────────────┴───────────────────────────────┘
+    ├─ Step 1 ──► Extract 8 key frames (browser-side canvas)
+    │
+    ├─ Step 2 ──► HuggingFace #1: dima806/deepfake_vs_real (per frame)
+    │
+    ├─ Step 3 ──► HuggingFace #2: Wvolf/ViT-Deepfake-Detection (per frame)
+    │
+    ├─ Step 4 ──► Gemini 1.5 Flash: Temporal artifacts + facial analysis
+    │
+    ├─ Step 5 ──► Sightengine: Dedicated deepfake + GenAI video model
+    │
+    └─ Step 6 ──► Weighted combined score → FINAL VERDICT
 ```
 
 ---
 
-## ⚡ Quick Start
+## 🛠️ Tech Stack
 
-Getting NeuralEye running takes **under 2 minutes**.
+<div align="center">
 
-### Step 1 — Open the file
+| Layer | Technology |
+|:---:|:---|
+| 🏗️ **Frontend** | Vanilla HTML5 + CSS3 + JavaScript (ES2022) — zero frameworks |
+| 🤖 **AI Engine 1** | Google Gemini 2.5 Flash Lite (image) / Gemini 1.5 Flash (video) |
+| 🤗 **AI Engine 2** | HuggingFace Inference API — `Organika/sdxl-detector` |
+| 👁️ **AI Engine 3** | Sightengine GenAI + Deepfake models |
+| 📊 **Charts** | Chart.js 4.4.0 |
+| 📄 **PDF** | jsPDF 2.5.1 + html2canvas 1.4.1 |
+| 🗃️ **Storage** | Browser localStorage (zero backend) |
+| 🌐 **Hosting** | GitHub Pages |
+| 🔡 **Fonts** | Space Mono + DM Sans + Noto Nastaliq Urdu |
+
+</div>
+
+---
+
+## 🚀 Getting Started
+
+### Option A — Use it Instantly (No Setup)
+> **[👉 Open NeuralEye Live](https://abd-abdullah83.github.io/NeuralEye/index.html)** — works in any modern browser.
+
+### Option B — Run Locally
+
 ```bash
-# No install. Just open it.
-open NeuralEyeV3.html
-# or drag it into any browser window
+# 1. Clone the repository
+git clone https://github.com/Abd-Abdullah83/NeuralEye.git
+
+# 2. Open the file (no server needed)
+cd NeuralEye
+open index.html
+# or just double-click index.html
 ```
 
-### Step 2 — Get your API keys (free tiers available)
+### Option C — Fork & Deploy to GitHub Pages
 
-| API | Where to Get It | Required For |
-|-----|----------------|--------------|
-| **Gemini** | [aistudio.google.com](https://aistudio.google.com) | Image analysis + chatbot |
-| **HuggingFace** | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) | AI/Real classification |
-| **Sightengine** | [sightengine.com](https://sightengine.com) | Deepfake scoring |
-| **NewsAPI** | [newsapi.org](https://newsapi.org) | News verification |
-| **JSONBin** | [jsonbin.io](https://jsonbin.io) | Pledge wall (optional) |
-
-### Step 3 — Enter keys in Settings
-Click **⚙️ Settings** → paste your keys → **Save Keys**  
-*(Keys are stored only in your browser's localStorage — never sent anywhere)*
-
-### Step 4 — Analyze!
-Go to **🔍 Analyze** → upload an image → the AI does the rest.
-
----
-
-## 🖥️ Interface Preview
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│  NEURAL·EYE          📡 14:32:07                                 │
-│  AI DETECTION                                                    │
-│ ─────────────                ┌─────────────────────────────────┐│
-│  MAIN                        │  🔍 ANALYZE IMAGE               ││
-│  ├ 🔍 Analyze          ◄─── │                                 ││
-│  ├ 📰 News Verifier          │  [  Drop image here  ]          ││
-│  ├ 🎓 Education              │                                 ││
-│  ├ 📅 Timeline               │  ┌──────────┐ ┌─────────────┐  ││
-│  ├ 🤝 Pledge                 │  │  GEMINI  │ │ HUGGINGFACE │  ││
-│  └ 🤖 Ask AI                 │  │  97.3%   │ │   91.8%     │  ││
-│                              │  └──────────┘ └─────────────┘  ││
-│  SYSTEM                      │                                 ││
-│  └ ⚙️ Settings               │  ⚠️  AI GENERATED  — 94.6%     ││
-│                              │  Threat: ████████░░ HIGH        ││
-│  🌙 Dark  ☀️ Light           └─────────────────────────────────┘│
-└──────────────────────────────────────────────────────────────────┘
+```bash
+# 1. Fork this repo on GitHub
+# 2. Go to Settings → Pages → Source: main branch / root
+# 3. Your instance is live at:
+#    https://YOUR-USERNAME.github.io/NeuralEye/
 ```
 
 ---
 
-## 🇵🇰 Built for Pakistan
+## 🔑 API Keys Setup
 
-NeuralEye was developed with the Pakistani digital landscape in mind. It includes:
+NeuralEye requires **free API keys** from 3 providers. All keys are stored **only in your browser** — never sent to any server.
 
-- **Pakistan-specific fact database** — deepfake stats relevant to Pakistani media
-- **WhatsApp-aware design** — one-tap WhatsApp share for verified results
-- **Urdu-friendly AI responses** — the chatbot understands Pakistani context
-- **Local news sources** — Dawn, Geo, ARY, BBC Urdu listed for verification
-- **PECA 2016 coverage** — legal context explained in the Education Hub
-- **2024 Election misinformation** — documented in the Timeline
+<div align="center">
 
-> Pakistan has **50+ million WhatsApp users** — making digital literacy not just useful, but *urgent*.
+| API | Free Tier | Get Key |
+|:---|:---:|:---:|
+| **Google Gemini** | ✅ 1M tokens/day | [ai.google.dev](https://ai.google.dev) |
+| **HuggingFace** | ✅ Free inference | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) |
+| **Sightengine** | ✅ 500 ops/month | [sightengine.com](https://sightengine.com) |
+| **NewsAPI** *(optional)* | ✅ 100 req/day | [newsapi.org](https://newsapi.org) |
+| **JSONBin** *(optional)* | ✅ Free | [jsonbin.io](https://jsonbin.io) |
 
----
+</div>
 
-## 📤 Export & Share
-
-After every analysis, NeuralEye gives you multiple ways to act on the results:
-
-```
-📄  Export PDF          →  Full report with scores, clues, and explanation
-🖼️  Share Card          →  Auto-generated visual card for social media
-💬  WhatsApp Share      →  Pre-formatted message ready to send
-📋  Copy to Clipboard   →  Plain text result for any use
-```
+Once you have the keys:
+1. Open NeuralEye → click **⚙️ Settings & APIs** in the sidebar
+2. Paste each key into its field
+3. Click **💾 Save Keys**
+4. Done — keys persist across sessions
 
 ---
 
-## 🎨 Customization
+## 📸 Core Tabs Explained
 
-NeuralEye is fully themeable — right from the Settings panel:
+<details>
+<summary><b>🔍 Image Analyzer</b></summary>
 
-**Theme Modes**
-- 🌙 **Dark** (default) — deep space aesthetic with glowing accents
-- ☀️ **Light** — clean white with muted tones
+- Upload via **drag & drop**, **file browser**, or **image URL**
+- Pre-analysis **instinct quiz** — guess before the AI reveals its verdict
+- All 3 engines run in **parallel** for speed
+- Results include: verdict, threat level, visual clues, explanation, confidence chart
+- Export as **PDF** or shareable **image card**
 
-**Accent Colors**
-```
-  ● Cyan #00e5ff   (default)
-  ● Purple #7c3aed
-  ● Green #10b981
-  ● Amber #f59e0b
-  ● Red #ef4444
-  ● Pink #ec4899
-  ● Custom (color picker)
-```
+</details>
 
-**Voice Controls**
-- 🔊 TTS readout of analysis results (toggle on/off)
-- 🎙️ Voice input for the chatbot and news verifier
+<details>
+<summary><b>🎬 Video Deepfake Detector</b></summary>
+
+- Supports MP4, WEBM, MOV up to 50MB
+- Extracts **8 key frames** client-side via canvas
+- Runs **4 AI models** in sequence
+- Shows **frame-by-frame grid** with individual fake scores
+- Gemini performs full **temporal analysis** of the video file
+
+</details>
+
+<details>
+<summary><b>📰 News Checker</b></summary>
+
+- Input: headline text, article URL, or screenshot upload
+- Voice input via browser Speech API
+- Cross-references with **NewsAPI** if key is configured
+- Verdict: VERIFIED / UNVERIFIED / DISPUTED / MISINFORMATION
+- Links to trusted Pakistani & international sources
+
+</details>
+
+<details>
+<summary><b>💬 Ask AI</b></summary>
+
+- Powered by **Gemini 2.5 Flash Lite**
+- Multi-turn conversation with memory (last 10 turns)
+- Topic chips: Education, Health, Science, Tech, Pakistan, Career, Math
+- Voice input + voice readout with speed control
+- Full **Markdown rendering** in chat bubbles
+
+</details>
+
+<details>
+<summary><b>🎓 Education Hub</b></summary>
+
+- What are deepfakes? How are they made?
+- **Pakistan-specific context**: Elections, WhatsApp crisis, PECA law, audio deepfakes
+- 6 practical tips for digital safety
+- All content structured for non-technical audiences
+
+</details>
+
+<details>
+<summary><b>🕐 Misinformation Timeline</b></summary>
+
+- Key global & Pakistani deepfake incidents from 2017–2025
+- Covers: Reddit origins, Gabon crisis, Ukraine war fakes, PTI AI speeches, Pakistan 2024 elections
+
+</details>
 
 ---
 
-## 🔒 Privacy First
-
-NeuralEye takes privacy seriously:
+## 🇵🇰 Why Pakistan?
 
 ```
-✅  API keys stored in localStorage only
-✅  Images processed directly by third-party APIs — not stored by NeuralEye
-✅  No analytics, no tracking, no telemetry
-✅  No backend server — your data never touches our infrastructure
-✅  Open source — audit every line in NeuralEyeV3.html
+📊 50M+ WhatsApp users — one of Asia's highest
+🗳️ Deepfakes used in 2024 General Election misinformation
+🎙️ AI-cloned politician voices used for political attacks
+⚖️ PECA 2016 criminalizes digital defamation (up to 3 yrs)
+📱 Most forwarded content is shared with zero fact-checking
+```
+
+NeuralEye was built as a **community tool** — free, local-language-ready, and accessible to anyone with a smartphone.
+
+---
+
+## 🔒 Privacy
+
+```
+✅  No account required
+✅  No data stored on any server
+✅  Images sent ONLY to the AI APIs you configure
+✅  All processing happens in your browser
+✅  API keys never leave your device
+✅  No analytics or tracking
 ```
 
 ---
 
-## 🗂️ File Structure
+## 📁 Repository Structure
 
 ```
-NeuralEyeV3.html          ← The entire application (single file)
-README.md                 ← You are here
+NeuralEye/
+├── index.html          ← Entire application (single-file architecture)
+├── logo.png            ← App icon / favicon
+├── thumbnail.png       ← OG social preview image
+└── README.md           ← You are here
 ```
-
-That's it. One file. The entire platform — HTML, CSS, and JavaScript — lives in `NeuralEyeV3.html`.
 
 ---
 
-## 🛣️ Roadmap
+## 🗺️ Roadmap
 
-- [ ] 🎥 Video deepfake frame-by-frame analysis
-- [ ] 🌐 Urdu language UI toggle
-- [ ] 📊 Analysis history log with local storage
-- [ ] 🔌 Browser extension for right-click detection
-- [ ] 📱 Progressive Web App (PWA) support
-- [ ] 🔗 WhatsApp Bot integration
+- [x] Image deepfake detection (3 engines)
+- [x] Video deepfake detection (4 engines)
+- [x] News verification with Gemini
+- [x] Ask AI chat (multi-turn)
+- [x] Urdu language support
+- [x] PDF export
+- [x] Voice I/O
+- [ ] Browser extension version
+- [ ] Urdu voice recognition
+- [ ] Batch image analysis mode
+- [ ] Community-sourced misinformation database
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how to get started:
+Contributions are welcome! Here's how:
 
 ```bash
-# 1. Fork the repository
-# 2. Make your changes to NeuralEyeV3.html
-# 3. Test in Chrome/Firefox/Edge
-# 4. Submit a pull request with a clear description
+# 1. Fork the repo
+# 2. Create your feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Commit your changes
+git commit -m "Add: your feature description"
+
+# 4. Push to your fork
+git push origin feature/your-feature-name
+
+# 5. Open a Pull Request
 ```
 
-**Ideas for contribution:** new AI provider integrations, UI improvements, Urdu translations, additional Pakistan-specific content, new export formats.
-
----
-
-## ⚠️ Disclaimer
-
-NeuralEye is an **educational and awareness tool**. No AI detection system is 100% accurate. Always use multiple verification methods for critical decisions. The platform does not store, share, or process images beyond the API calls you initiate.
+**Good first issues to contribute:**
+- Adding more Urdu translations to the `T` dictionary
+- Adding new entries to the Misinformation Timeline
+- Improving the Education Hub content
+- Testing with different image types and documenting accuracy
 
 ---
 
@@ -286,14 +367,39 @@ Attribution appreciated but not required.
 
 ---
 
+## 👤 Author
+
 <div align="center">
 
-**Built with 🤍 to fight misinformation in Pakistan and beyond**
+**Abdullah**
+*BS Data Science · FAST-NUCES Lahore*
 
-*"Verify before you share."*
+[![GitHub](https://img.shields.io/badge/GitHub-Abd--Abdullah83-181717?style=for-the-badge&logo=github)](https://github.com/Abd-Abdullah83)
+[![Twitter](https://img.shields.io/badge/Twitter-@Abd__Abdullah83-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/Abd_Abdullah83)
+
+*Built with ❤️ for Pakistan's digital safety*
+
+</div>
 
 ---
 
-⭐ Star this repo if NeuralEye helped you detect something fake!
+## ⭐ Support the Project
+
+If NeuralEye helped you, consider:
+
+- ⭐ **Starring this repo** — helps others discover it
+- 🔄 **Sharing with friends** — spread digital awareness
+- 🤝 **Taking the Digital Pledge** — [inside the app](https://abd-abdullah83.github.io/NeuralEye/index.html)
+- 🛠️ **Contributing code** — see section above
+
+---
+
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00e5ff,50:7c3aed,100:00e5ff&height=120&section=footer&fontSize=20&fontColor=ffffff&animation=fadeIn" width="100%"/>
+
+**"Verify before you share. Every click matters."**
+
+`NeuralEye v3.0` · `MIT License` · `Built in Pakistan 🇵🇰`
 
 </div>
