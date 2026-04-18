@@ -1915,6 +1915,7 @@ let extractedFrames = [];
 function handleVideoDrop(e){
   e.preventDefault();
   handleDragLeave(e);
+    const f = e.dataTransfer?.files?.[0];
   const f = e.dataTransfer?.files?.[0];
   if(f && f.type.startsWith('video/')) loadVideoFile(f);
   else alert('Please drop a video file (MP4, WEBM, MOV)');
