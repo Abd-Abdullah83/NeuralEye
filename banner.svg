@@ -1,0 +1,119 @@
+<svg width="900" height="200" viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#080b14;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0e1220;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#080b14;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00e5ff;stop-opacity:1">
+        <animate attributeName="stop-color" values="#00e5ff;#7c3aed;#00e5ff" dur="4s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#00e5ff;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="200" fill="url(#bgGrad)" rx="0"/>
+
+  <!-- Animated scan line -->
+  <rect width="900" height="2" fill="url(#waveGrad)" opacity="0.6" rx="1">
+    <animate attributeName="y" values="-2;202;-2" dur="3s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Grid dots -->
+  <g opacity="0.08">
+    <circle cx="50" cy="50" r="1" fill="#00e5ff"/><circle cx="100" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="150" cy="50" r="1" fill="#00e5ff"/><circle cx="200" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="250" cy="50" r="1" fill="#00e5ff"/><circle cx="300" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="350" cy="50" r="1" fill="#00e5ff"/><circle cx="400" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="450" cy="50" r="1" fill="#00e5ff"/><circle cx="500" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="550" cy="50" r="1" fill="#00e5ff"/><circle cx="600" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="650" cy="50" r="1" fill="#00e5ff"/><circle cx="700" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="750" cy="50" r="1" fill="#00e5ff"/><circle cx="800" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="850" cy="50" r="1" fill="#00e5ff"/>
+    <circle cx="50" cy="100" r="1" fill="#7c3aed"/><circle cx="100" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="150" cy="100" r="1" fill="#7c3aed"/><circle cx="200" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="250" cy="100" r="1" fill="#7c3aed"/><circle cx="300" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="350" cy="100" r="1" fill="#7c3aed"/><circle cx="400" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="450" cy="100" r="1" fill="#7c3aed"/><circle cx="500" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="550" cy="100" r="1" fill="#7c3aed"/><circle cx="600" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="650" cy="100" r="1" fill="#7c3aed"/><circle cx="700" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="750" cy="100" r="1" fill="#7c3aed"/><circle cx="800" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="850" cy="100" r="1" fill="#7c3aed"/>
+    <circle cx="50" cy="150" r="1" fill="#00e5ff"/><circle cx="150" cy="150" r="1" fill="#00e5ff"/>
+    <circle cx="250" cy="150" r="1" fill="#00e5ff"/><circle cx="350" cy="150" r="1" fill="#00e5ff"/>
+    <circle cx="450" cy="150" r="1" fill="#00e5ff"/><circle cx="550" cy="150" r="1" fill="#00e5ff"/>
+    <circle cx="650" cy="150" r="1" fill="#00e5ff"/><circle cx="750" cy="150" r="1" fill="#00e5ff"/>
+    <circle cx="850" cy="150" r="1" fill="#00e5ff"/>
+  </g>
+
+  <!-- Glow orbs -->
+  <circle cx="150" cy="100" r="60" fill="#00e5ff" opacity="0.04" filter="url(#softglow)">
+    <animate attributeName="opacity" values="0.04;0.08;0.04" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="750" cy="100" r="60" fill="#7c3aed" opacity="0.04" filter="url(#softglow)">
+    <animate attributeName="opacity" values="0.04;0.09;0.04" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Top border line -->
+  <rect x="0" y="0" width="900" height="3" fill="url(#waveGrad)" opacity="0.9"/>
+  <!-- Bottom border line -->
+  <rect x="0" y="197" width="900" height="3" fill="url(#waveGrad)" opacity="0.9"/>
+
+  <!-- Eye icon left -->
+  <text x="68" y="112" font-size="36" text-anchor="middle" filter="url(#glow)" opacity="0.7">
+    👁️
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Main title -->
+  <text x="450" y="95" font-family="'Courier New', Courier, monospace" font-size="58" font-weight="bold"
+        text-anchor="middle" fill="url(#textGrad)" filter="url(#glow)" letter-spacing="6">
+    NeuralEye
+  </text>
+
+  <!-- Subtitle -->
+  <text x="450" y="130" font-family="'Courier New', Courier, monospace" font-size="14"
+        text-anchor="middle" fill="#64748b" letter-spacing="4">
+    AI DEEPFAKE &amp; IMAGE DETECTION PLATFORM
+  </text>
+
+  <!-- Bottom tag line -->
+  <text x="450" y="165" font-family="Arial, sans-serif" font-size="12"
+        text-anchor="middle" fill="#334155" letter-spacing="2">
+    BUILT FOR PAKISTAN'S DIGITAL SAFETY  •  FREE  •  NO SIGNUP
+  </text>
+
+  <!-- Animated accent line under title -->
+  <rect x="310" y="140" width="0" height="1" fill="#00e5ff" opacity="0.6" rx="1">
+    <animate attributeName="width" values="0;280;0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="450;310;450" dur="3s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Corner accents -->
+  <polyline points="10,30 10,10 30,10" stroke="#00e5ff" stroke-width="2" fill="none" opacity="0.5"/>
+  <polyline points="870,10 890,10 890,30" stroke="#7c3aed" stroke-width="2" fill="none" opacity="0.5"/>
+  <polyline points="10,170 10,190 30,190" stroke="#7c3aed" stroke-width="2" fill="none" opacity="0.5"/>
+  <polyline points="870,190 890,190 890,170" stroke="#00e5ff" stroke-width="2" fill="none" opacity="0.5"/>
+</svg>
