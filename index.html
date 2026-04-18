@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -1914,7 +1913,7 @@ let extractedFrames = [];
 
 function handleVideoDrop(e){
   e.preventDefault();
-  document.getElementById('videoDropZone').classList.remove('drag-over');
+  handleDragLeave(e);
   const f = e.dataTransfer?.files?.[0];
   if(f && f.type.startsWith('video/')) loadVideoFile(f);
   else alert('Please drop a video file (MP4, WEBM, MOV)');
@@ -2283,7 +2282,8 @@ const combinedFakeScore = hasSE
 function shareVideoWhatsApp(){
   const verdict = document.getElementById('videoVerdictLabel')?.textContent || '';
   const pct = document.getElementById('videoThreatPct')?.textContent || '';
-const msg = `⚠️ NeuralEye Video Analysis\n🎬 Verdict: ${verdict}\n📊 Manipulation Probability: ${pct}\nVerified using 4 AI models (Gemini + 2× HuggingFace + Sightengine)\n\nVerify before you share. Try NeuralEye free.`;  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  const msg = `⚠️ NeuralEye Video Analysis\n🎬 Verdict: ${verdict}\n📊 Manipulation Probability: ${pct}\nVerified using 3 AI models (Gemini + 2× HuggingFace)\n\nVerify before you share. Try NeuralEye free.`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 function copyVideoResult(){
