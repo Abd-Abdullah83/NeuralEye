@@ -2749,7 +2749,7 @@ Respond ONLY in JSON (no markdown):
         const data = await resp.json();
         const score = data.type?.ai_generated??0;
         return {ai_score:score,label:score>0.5?'AI_GENERATED':'REAL'};
-      } catch(){ return null; }
+      } catch(e){ return null; }
     })();
 
     // ── Combine all 3 simultaneously ─────────────────────────────
