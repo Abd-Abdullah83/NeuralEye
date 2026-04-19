@@ -652,92 +652,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
   </div>
-<!-- AUDIO TAB -->
-<div class="tab-content" id="tab-audio">
-  <div class="page-header">
-    <h1><span>Audio</span> Deepfake Detector</h1>
-    <p>Upload a voice clip — AI detects if it's cloned, synthesized, or a real human voice</p>
-  </div>
-
-  <div class="card" style="margin-bottom:20px;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.03)">
-    <div class="card-title"><i class="fas fa-triangle-exclamation"></i> Why This Matters</div>
-    <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.9">
-      <div>🎙️ AI can clone any voice using just <strong>3 seconds</strong> of audio</div>
-      <div>📞 Scammers impersonate family members in "emergency" calls demanding money</div>
-      <div>🇵🇰 Pakistani politicians' voices cloned to spread fake statements</div>
-      <div>💰 $25 million lost in one company via a deepfake CEO voice call (2024)</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:20px">
-    <div class="card-title"><i class="fas fa-microphone-lines"></i> Upload Audio Clip</div>
-    <div class="upload-zone" id="audioDropZone" onclick="document.getElementById('audioFileInput').click()"
-      ondrop="handleAudioDrop(event)" ondragover="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
-      <i class="fas fa-file-audio"></i>
-      <h3>Drop audio file here or click to browse</h3>
-      <p>MP3, WAV, OGG, M4A supported • Max 10MB • Min 3 seconds</p>
-    </div>
-    <input type="file" id="audioFileInput" accept="audio/*" onchange="handleAudioFileSelect(event)" style="display:none">
-
-    <div id="audioPreviewWrap" style="display:none;margin-top:16px">
-      <audio id="audioPreview" controls style="width:100%;border-radius:8px"></audio>
-      <div style="margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center">
-        <span id="audioFileName" style="font-size:.8rem;color:var(--text-secondary)"></span>
-        <button class="btn btn-outline btn-sm" onclick="clearAudio()"><i class="fas fa-times"></i> Clear</button>
-        <button class="btn btn-primary" onclick="startAudioAnalysis()"><i class="fas fa-bolt"></i> Analyze Voice</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="audioLoader" style="display:none;text-align:center;padding:40px">
-    <div class="loading-bar" style="margin-bottom:20px"></div>
-    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.9rem;margin-bottom:8px">ANALYZING VOICE...</div>
-    <ul class="analysis-steps">
-      <li class="analysis-step active" id="astep1"><span class="status-dot loading"></span> Sending to HuggingFace audio model...</li>
-      <li class="analysis-step" id="astep2"><span class="status-dot loading"></span> Running Gemini audio reasoning...</li>
-      <li class="analysis-step" id="astep3"><span class="status-dot loading"></span> Computing combined verdict...</li>
-    </ul>
-  </div>
-
-  <div id="audioResultsSection" style="display:none">
-    <div id="audioVerdictCard" class="final-verdict" style="margin-bottom:20px">
-      <span class="verdict-icon" id="audioVerdictIcon">🎙️</span>
-      <div class="verdict-label" id="audioVerdictLabel">ANALYZING...</div>
-      <div class="verdict-confidence" id="audioVerdictConf"></div>
-    </div>
-
-    <div class="grid-2" style="margin-bottom:20px">
-      <div class="card">
-        <div class="card-title"><i class="fas fa-robot"></i> HuggingFace Model</div>
-        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">mo-zada/deepfake-audio-detection</div>
-        <div id="audioHFResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
-        <div id="audioHFScore" style="margin-top:8px"></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><i class="fab fa-google"></i> Gemini Reasoning</div>
-        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">Spectral & pattern analysis</div>
-        <div id="audioGeminiResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
-        <div id="audioGeminiScore" style="margin-top:8px"></div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title"><i class="fas fa-magnifying-glass"></i> Detected Clues</div>
-      <div id="audioClues" style="margin-bottom:12px"></div>
-      <div id="audioExplanation" style="font-size:.85rem;color:var(--text-secondary);line-height:1.8;border-top:1px solid var(--border);padding-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><i class="fas fa-share-nodes"></i> Actions</div>
-      <div class="action-buttons">
-        <button class="btn btn-outline" onclick="shareAudioWhatsApp()"><i class="fab fa-whatsapp"></i> Share Warning</button>
-        <button class="btn btn-outline" onclick="copyAudioResult()"><i class="fas fa-copy"></i> Copy Result</button>
-        <button class="btn btn-outline" onclick="clearAudio()"><i class="fas fa-redo"></i> Analyze Another</button>
-        <a id="audioFIABtn" href="https://nr3c.gov.pk/" target="_blank" rel="noopener" class="btn btn-sm" style="display:none;background:rgba(239,68,68,0.15);border:1px solid var(--danger);color:var(--danger);text-decoration:none"><i class="fas fa-shield-halved"></i> Report to FIA</a>
-      </div>
-    </div>
-  </div>
-</div>
   <!-- How it works -->
   <div class="card" style="margin-bottom:20px;font-size:.82rem;color:var(--text-secondary);line-height:1.9">
     <div class="card-title"><i class="fas fa-info-circle"></i> How Video Analysis Works</div>
@@ -840,6 +754,88 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 </div>
+<!-- AUDIO TAB -->
+<div class="tab-content" id="tab-audio">
+<!-- AUDIO TAB -->
+<div class="tab-content" id="tab-audio">
+  <div class="page-header">
+    <h1><span>Audio</span> Deepfake Detector</h1>
+    <p>Upload a voice clip — AI detects if it's cloned, synthesized, or a real human voice</p>
+  </div>
+  <div class="card" style="margin-bottom:20px;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.03)">
+    <div class="card-title"><i class="fas fa-triangle-exclamation"></i> Why This Matters</div>
+    <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.9">
+      <div>🎙️ AI can clone any voice using just <strong>3 seconds</strong> of audio</div>
+      <div>📞 Scammers impersonate family members in "emergency" calls demanding money</div>
+      <div>🇵🇰 Pakistani politicians' voices cloned to spread fake statements</div>
+      <div>💰 $25 million lost in one company via a deepfake CEO voice call (2024)</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title"><i class="fas fa-microphone-lines"></i> Upload Audio Clip</div>
+    <div class="upload-zone" id="audioDropZone" onclick="document.getElementById('audioFileInput').click()"
+      ondrop="handleAudioDrop(event)" ondragover="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+      <i class="fas fa-file-audio"></i>
+      <h3>Drop audio file here or click to browse</h3>
+      <p>MP3, WAV, OGG, M4A supported • Max 10MB • Min 3 seconds</p>
+    </div>
+    <input type="file" id="audioFileInput" accept="audio/*" onchange="handleAudioFileSelect(event)" style="display:none">
+    <div id="audioPreviewWrap" style="display:none;margin-top:16px">
+      <audio id="audioPreview" controls style="width:100%;border-radius:8px"></audio>
+      <div style="margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center">
+        <span id="audioFileName" style="font-size:.8rem;color:var(--text-secondary)"></span>
+        <button class="btn btn-outline btn-sm" onclick="clearAudio()"><i class="fas fa-times"></i> Clear</button>
+        <button class="btn btn-primary" onclick="startAudioAnalysis()"><i class="fas fa-bolt"></i> Analyze Voice</button>
+      </div>
+    </div>
+  </div>
+  <div id="audioLoader" style="display:none;text-align:center;padding:40px">
+    <div class="loading-bar" style="margin-bottom:20px"></div>
+    <div style="font-family:var(--font-mono);color:var(--accent);font-size:.9rem;margin-bottom:8px">ANALYZING VOICE...</div>
+    <ul class="analysis-steps">
+      <li class="analysis-step active" id="astep1"><span class="status-dot loading"></span> Sending to HuggingFace audio model...</li>
+      <li class="analysis-step" id="astep2"><span class="status-dot loading"></span> Running Gemini audio reasoning...</li>
+      <li class="analysis-step" id="astep3"><span class="status-dot loading"></span> Computing combined verdict...</li>
+    </ul>
+  </div>
+  <div id="audioResultsSection" style="display:none">
+    <div id="audioVerdictCard" class="final-verdict" style="margin-bottom:20px">
+      <span class="verdict-icon" id="audioVerdictIcon">🎙️</span>
+      <div class="verdict-label" id="audioVerdictLabel">ANALYZING...</div>
+      <div class="verdict-confidence" id="audioVerdictConf"></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-robot"></i> HuggingFace Model</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">mo-zada/deepfake-audio-detection</div>
+        <div id="audioHFResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="audioHFScore" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fab fa-google"></i> Gemini Reasoning</div>
+        <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:6px">Spectral & pattern analysis</div>
+        <div id="audioGeminiResult" style="font-size:.9rem;font-weight:600">Waiting...</div>
+        <div id="audioGeminiScore" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fas fa-magnifying-glass"></i> Detected Clues</div>
+      <div id="audioClues" style="margin-bottom:12px"></div>
+      <div id="audioExplanation" style="font-size:.85rem;color:var(--text-secondary);line-height:1.8;border-top:1px solid var(--border);padding-top:12px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-share-nodes"></i> Actions</div>
+      <div class="action-buttons">
+        <button class="btn btn-outline" onclick="shareAudioWhatsApp()"><i class="fab fa-whatsapp"></i> Share Warning</button>
+        <button class="btn btn-outline" onclick="copyAudioResult()"><i class="fas fa-copy"></i> Copy Result</button>
+        <button class="btn btn-outline" onclick="clearAudio()"><i class="fas fa-redo"></i> Analyze Another</button>
+        <a id="audioFIABtn" href="https://nr3c.gov.pk/" target="_blank" rel="noopener" class="btn btn-sm" style="display:none;background:rgba(239,68,68,0.15);border:1px solid var(--danger);color:var(--danger);text-decoration:none"><i class="fas fa-shield-halved"></i> Report to FIA</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- NEWS TAB -->
 <div class="tab-content" id="tab-news">
   <div class="page-header">
@@ -1640,6 +1636,7 @@ Analyze it and respond ONLY in this JSON format (no markdown, no backticks):
   try{
   const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,
       { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1,maxOutputTokens:600} }) });
+   const data = await resp.json();
     const t = data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
     const result = JSON.parse(t.replace(/```json|```/g,'').trim());
     showNewsResult(result);
