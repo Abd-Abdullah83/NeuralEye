@@ -491,10 +491,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div id="batchSummaryStats" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px"></div>
       <div id="batchResultsTable"></div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="exportBatchPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+      <button class="btn btn-outline" onclick="generateBatchShareCard()"><i class="fas fa-image"></i> Share Card</button>
+      <button class="btn btn-outline" onclick="shareBatchWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
       <button class="btn btn-outline" onclick="copyBatchResults()"><i class="fas fa-copy"></i> Copy Summary</button>
-      <button class="btn btn-outline" onclick="shareBatchWhatsApp()"><i class="fab fa-whatsapp"></i> Share Summary</button>
       <button class="btn btn-outline" onclick="clearBatch()"><i class="fas fa-redo"></i> Check More</button>
+    </div>
+    <div id="batchShareCard" style="display:none;background:linear-gradient(135deg,#080b14,#0e1220);border:1px solid rgba(0,229,255,0.3);border-radius:16px;padding:24px;text-align:center;margin-top:16px">
+      <div style="font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:3px;color:#00e5ff;margin-bottom:8px">NEURALEYE BATCH CHECK REPORT</div>
+      <div id="batchShareCardIcon" style="font-size:2rem"></div>
+      <div id="batchShareCardVerdict" style="font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:#e2e8f0;margin:8px 0"></div>
+      <div id="batchShareCardConf" style="font-size:.8rem;color:#64748b"></div>
+      <div style="margin-top:10px;font-size:.7rem;color:#334155">Verify before you share • NeuralEye AI Detection</div>
     </div>
   </div>
 </div>
@@ -744,18 +753,25 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
 
     <!-- Actions -->
-    <div class="card">
-      <div class="card-title"><i class="fas fa-share-nodes"></i> Actions</div>
+   <div class="card">
+      <div class="card-title"><i class="fas fa-share-nodes"></i> Export & Share</div>
       <div class="action-buttons">
-        <button class="btn btn-outline" onclick="shareVideoWhatsApp()"><i class="fab fa-whatsapp"></i> Share Warning</button>
-        <button class="btn btn-outline" onclick="copyVideoResult()"><i class="fas fa-copy"></i> Copy Result</button>
+        <button class="btn btn-primary" onclick="exportVideoPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+        <button class="btn btn-outline" onclick="generateVideoShareCard()"><i class="fas fa-image"></i> Share Card</button>
+        <button class="btn btn-outline" onclick="shareVideoWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn btn-outline" onclick="copyVideoResult()"><i class="fas fa-copy"></i> Copy</button>
         <button class="btn btn-outline" onclick="analyzeAnotherVideo()"><i class="fas fa-redo"></i> Analyze Another</button>
+      </div>
+      <div id="videoShareCard" style="display:none;background:linear-gradient(135deg,#080b14,#0e1220);border:1px solid rgba(0,229,255,0.3);border-radius:16px;padding:24px;text-align:center;margin-top:16px">
+        <div style="font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:3px;color:#00e5ff;margin-bottom:8px">NEURALEYE VIDEO DETECTION REPORT</div>
+        <div id="videoShareCardIcon" style="font-size:2.5rem"></div>
+        <div id="videoShareCardVerdict" style="font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:#e2e8f0;margin:8px 0"></div>
+        <div id="videoShareCardConf" style="font-size:.8rem;color:#64748b"></div>
+        <div style="margin-top:10px;font-size:.7rem;color:#334155">Verify before you share • NeuralEye AI Detection</div>
       </div>
     </div>
   </div>
 </div>
-<!-- AUDIO TAB -->
-<div class="tab-content" id="tab-audio">
 <!-- AUDIO TAB -->
 <div class="tab-content" id="tab-audio">
   <div class="page-header">
@@ -824,17 +840,26 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div id="audioExplanation" style="font-size:.85rem;color:var(--text-secondary);line-height:1.8;border-top:1px solid var(--border);padding-top:12px"></div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="fas fa-share-nodes"></i> Actions</div>
+      <div class="card-title"><i class="fas fa-share-nodes"></i> Export & Share</div>
       <div class="action-buttons">
-        <button class="btn btn-outline" onclick="shareAudioWhatsApp()"><i class="fab fa-whatsapp"></i> Share Warning</button>
-        <button class="btn btn-outline" onclick="copyAudioResult()"><i class="fas fa-copy"></i> Copy Result</button>
+        <button class="btn btn-primary" onclick="exportAudioPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+        <button class="btn btn-outline" onclick="generateAudioShareCard()"><i class="fas fa-image"></i> Share Card</button>
+        <button class="btn btn-outline" onclick="shareAudioWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn btn-outline" onclick="copyAudioResult()"><i class="fas fa-copy"></i> Copy</button>
         <button class="btn btn-outline" onclick="clearAudio()"><i class="fas fa-redo"></i> Analyze Another</button>
         <a id="audioFIABtn" href="https://nr3c.gov.pk/" target="_blank" rel="noopener" class="btn btn-sm" style="display:none;background:rgba(239,68,68,0.15);border:1px solid var(--danger);color:var(--danger);text-decoration:none"><i class="fas fa-shield-halved"></i> Report to FIA</a>
+      </div>
+      <div id="audioShareCard" style="display:none;background:linear-gradient(135deg,#080b14,#0e1220);border:1px solid rgba(0,229,255,0.3);border-radius:16px;padding:24px;text-align:center;margin-top:16px">
+        <div style="font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:3px;color:#00e5ff;margin-bottom:8px">NEURALEYE AUDIO DETECTION REPORT</div>
+        <div id="audioShareCardIcon" style="font-size:2.5rem"></div>
+        <div id="audioShareCardVerdict" style="font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:#e2e8f0;margin:8px 0"></div>
+        <div id="audioShareCardConf" style="font-size:.8rem;color:#64748b"></div>
+        <div style="margin-top:10px;font-size:.7rem;color:#334155">Verify before you trust • NeuralEye AI Detection</div>
       </div>
     </div>
   </div>
 </div>
-</div>
+
 
 <!-- NEWS TAB -->
 <div class="tab-content" id="tab-news">
@@ -2473,161 +2498,142 @@ async function startAudioAnalysis(){
   document.getElementById('audioLoader').style.display = 'block';
   document.getElementById('audioResultsSection').style.display = 'none';
 
-  // Reset steps
-  ['astep1','astep2','astep3'].forEach(id=>{
+  ['astep1','astep2','astep3'].forEach((id,i)=>{
     const el = document.getElementById(id);
-    el.className = 'analysis-step';
+    el.className = i===0 ? 'analysis-step active' : 'analysis-step';
     el.querySelector('.status-dot').className = 'status-dot loading';
   });
-  document.getElementById('astep1').className = 'analysis-step active';
 
-  let hfResult = null, geminiAudioResult = null;
+  let hfResult = null;
 
-  // ── HuggingFace audio model ──
+  // ── HuggingFace with 503 retry ─────────────────────────────
   if(keys.hf){
-    try{
-      const resp = await fetch('https://api-inference.huggingface.co/models/mo-zada/deepfake-audio-detection', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + keys.hf, 'Content-Type': currentAudioFile.type || 'audio/mpeg' },
-        body: currentAudioFile
-      });
-      if(resp.ok){
-        const data = await resp.json();
-        if(Array.isArray(data)){
-          const fake = data.find(d => /fake|spoof|synth|ai|clone/i.test(d.label));
-          const real = data.find(d => /real|genuine|human|bonafide/i.test(d.label));
-          const fakeScore = fake?.score ?? (real ? 1 - real.score : 0.5);
-          hfResult = { fakeScore, label: fakeScore > 0.5 ? 'FAKE/CLONED' : 'LIKELY REAL', raw: data };
+    for(let attempt=0; attempt<3; attempt++){
+      try{
+        const resp = await fetch('https://api-inference.huggingface.co/models/mo-zada/deepfake-audio-detection',{
+          method:'POST',
+          headers:{ 'Authorization':'Bearer '+keys.hf, 'Content-Type': currentAudioFile.type||'audio/mpeg' },
+          body: currentAudioFile
+        });
+        if(resp.status === 503){
+          await new Promise(r=>setTimeout(r,10000));
+          continue;
         }
-      }
-    } catch(e){ console.warn('HF audio error:', e); }
+        if(resp.ok){
+          const data = await resp.json();
+          if(Array.isArray(data)){
+            const fake = data.find(d=>/fake|spoof|synth|ai|clone/i.test(d.label));
+            const real = data.find(d=>/real|genuine|human|bonafide/i.test(d.label));
+            const fakeScore = fake?.score ?? (real ? 1-real.score : 0.5);
+            hfResult = { fakeScore, label: fakeScore>0.5?'FAKE / CLONED':'LIKELY REAL', raw: data };
+            break;
+          }
+        }
+      } catch(e){ console.warn('HF audio attempt',attempt,e); if(attempt===2) break; }
+    }
   }
 
   // Mark step 1 done
-  const s1 = document.getElementById('astep1');
-  s1.className = 'analysis-step done'; s1.querySelector('.status-dot').className = 'status-dot done';
-  document.getElementById('astep2').className = 'analysis-step active';
+  const s1=document.getElementById('astep1'); s1.className='analysis-step done'; s1.querySelector('.status-dot').className='status-dot done';
+  document.getElementById('astep2').className='analysis-step active';
 
-  // ── Gemini audio reasoning via base64 ──
+  // ── Gemini Audio ────────────────────────────────────────────
+  let geminiAudioResult = null;
   if(keys.gemini){
     try{
-      const base64Audio = await new Promise((res, rej)=>{
-        const reader = new FileReader();
-        reader.onload = e => res(e.target.result.split(',')[1]);
-        reader.onerror = rej;
-        reader.readAsDataURL(currentAudioFile);
-      });
+      const base64Audio = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(currentAudioFile); });
+      const prompt=`You are an expert in audio forensics. Analyze this audio clip and determine if it is:
+- REAL: genuine human voice
+- CLONED: AI voice clone (ElevenLabs, Resemble, VALL-E, etc.)
+- MANIPULATED: artificially altered voice
 
-      const prompt = `You are an expert in audio forensics and deepfake detection. Analyze this audio clip and determine if it is:
-1. A REAL human voice recorded naturally
-2. A CLONED/SYNTHESIZED voice created by AI (like ElevenLabs, Resemble, VALL-E, etc.)
-3. A MANIPULATED voice that has been artificially altered
+Indicators to check: unnatural rhythm, missing breath sounds, robotic enunciation, no micro-variations, processing artifacts, too-perfect consistency.
 
-Look for these indicators:
-- Unnatural prosody or robotic rhythm
-- Absence of natural breathing sounds between sentences
-- Overly perfect enunciation without natural hesitations
-- Background artifacts or processing artifacts
-- Unnatural vocal consistency (real voices have micro-variations)
-- Missing ambient noise or room acoustics
-
-Respond ONLY in this JSON (no markdown, no backticks):
+Respond ONLY in JSON (no markdown, no backticks):
 {"verdict":"REAL" or "CLONED" or "MANIPULATED","confidence":0.0-1.0,"explanation":"2-3 sentences","clues":["clue1","clue2","clue3"]}`;
 
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { inlineData: { mimeType: currentAudioFile.type || 'audio/mpeg', data: base64Audio }},
-              { text: prompt }
-            ]
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 400 }
-        })
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents:[{parts:[{inlineData:{mimeType:currentAudioFile.type||'audio/mpeg',data:base64Audio}},{text:prompt}]}], generationConfig:{temperature:0.1,maxOutputTokens:400} })
       });
-
       if(resp.ok){
-        const data = await resp.json();
-        const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+        const data=await resp.json();
+        const raw=data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
         geminiAudioResult = JSON.parse(raw.replace(/```json|```/g,'').trim());
       }
-    } catch(e){ console.warn('Gemini audio error:', e); }
+    } catch(e){ console.warn('Gemini audio error:',e); }
   }
 
   // Mark step 2 done
-  const s2 = document.getElementById('astep2');
-  s2.className = 'analysis-step done'; s2.querySelector('.status-dot').className = 'status-dot done';
-  document.getElementById('astep3').className = 'analysis-step active';
+  const s2=document.getElementById('astep2'); s2.className='analysis-step done'; s2.querySelector('.status-dot').className='status-dot done';
+  document.getElementById('astep3').className='analysis-step active';
 
-  // ── Combine results ──
-  const scores = [];
+  // ── Combine ─────────────────────────────────────────────────
+  const scores=[];
   if(hfResult) scores.push(hfResult.fakeScore);
   if(geminiAudioResult && !geminiAudioResult.error){
-    const gFake = geminiAudioResult.verdict === 'REAL' ? (1 - geminiAudioResult.confidence) : geminiAudioResult.confidence;
+    const gFake = geminiAudioResult.verdict==='REAL' ? (1-geminiAudioResult.confidence) : (geminiAudioResult.confidence||0.5);
     scores.push(gFake);
   }
-  const avgFake = scores.length > 0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 0.5;
-  const pct = Math.round(avgFake * 100);
+  const avgFake = scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 0.5;
+  const pct = Math.round(avgFake*100);
 
   let finalVerdict, verdictIcon, verdictClass;
-  if(avgFake >= 0.75){ finalVerdict = 'CLONED / AI VOICE'; verdictIcon = '🚨'; verdictClass = 'ai-gen'; }
-  else if(avgFake >= 0.5){ finalVerdict = 'SUSPICIOUS VOICE'; verdictIcon = '⚠️'; verdictClass = 'deepfake'; }
-  else if(avgFake >= 0.3){ finalVerdict = 'POSSIBLY REAL'; verdictIcon = '🔍'; verdictClass = ''; }
-  else { finalVerdict = 'REAL HUMAN VOICE'; verdictIcon = '✅'; verdictClass = 'real'; }
+  if(avgFake>=0.75){ finalVerdict='CLONED / AI VOICE'; verdictIcon='🚨'; verdictClass='ai-gen'; }
+  else if(avgFake>=0.5){ finalVerdict='SUSPICIOUS VOICE'; verdictIcon='⚠️'; verdictClass='deepfake'; }
+  else if(avgFake>=0.3){ finalVerdict='POSSIBLY REAL'; verdictIcon='🔍'; verdictClass=''; }
+  else { finalVerdict='REAL HUMAN VOICE'; verdictIcon='✅'; verdictClass='real'; }
 
-  audioAnalysisResult = { finalVerdict, pct, hfResult, geminiAudioResult };
+  audioAnalysisResult = { finalVerdict, pct, avgFake, hfResult, geminiAudioResult };
 
-  const s3 = document.getElementById('astep3');
-  s3.className = 'analysis-step done'; s3.querySelector('.status-dot').className = 'status-dot done';
+  // Mark step 3 done
+  const s3=document.getElementById('astep3'); s3.className='analysis-step done'; s3.querySelector('.status-dot').className='status-dot done';
 
   await new Promise(r=>setTimeout(r,400));
-  document.getElementById('audioLoader').style.display = 'none';
-  document.getElementById('audioResultsSection').style.display = 'block';
+  document.getElementById('audioLoader').style.display='none';
+  document.getElementById('audioResultsSection').style.display='block';
 
-  // Render verdict
-  const vCard = document.getElementById('audioVerdictCard');
-  vCard.className = 'final-verdict ' + verdictClass;
-  document.getElementById('audioVerdictIcon').textContent = verdictIcon;
-  document.getElementById('audioVerdictLabel').textContent = finalVerdict;
-  document.getElementById('audioVerdictConf').textContent = `Combined fake score: ${pct}% — based on ${scores.length} model${scores.length!==1?'s':''}`;
+  // Verdict card
+  const vCard=document.getElementById('audioVerdictCard');
+  vCard.className='final-verdict '+verdictClass;
+  document.getElementById('audioVerdictIcon').textContent=verdictIcon;
+  document.getElementById('audioVerdictLabel').textContent=finalVerdict;
+  document.getElementById('audioVerdictConf').textContent=`Combined fake score: ${pct}% — based on ${scores.length} model${scores.length!==1?'s':''}`;
 
   // HF card
   if(hfResult){
-    const hc = hfResult.fakeScore > 0.5 ? 'var(--danger)' : 'var(--success)';
-    document.getElementById('audioHFResult').innerHTML = `<span style="color:${hc}">${hfResult.label}</span>`;
-    document.getElementById('audioHFScore').innerHTML = makeProgressBar(hfResult.fakeScore, hc);
+    const hc=hfResult.fakeScore>0.5?'var(--danger)':'var(--success)';
+    document.getElementById('audioHFResult').innerHTML=`<span style="color:${hc}">${hfResult.label}</span>`;
+    document.getElementById('audioHFScore').innerHTML=makeProgressBar(hfResult.fakeScore,hc);
   } else {
-    document.getElementById('audioHFResult').innerHTML = `<span style="color:var(--warning)">No HF key or model unavailable</span>`;
+    document.getElementById('audioHFResult').innerHTML=`<span style="color:var(--warning)">Model loading — try again in 20s or check key</span>`;
   }
 
   // Gemini card
   if(geminiAudioResult && !geminiAudioResult.error){
-    const gIsFake = geminiAudioResult.verdict !== 'REAL';
-    const gScore = gIsFake ? geminiAudioResult.confidence : (1 - geminiAudioResult.confidence);
-    const gc = gIsFake ? 'var(--danger)' : 'var(--success)';
-    document.getElementById('audioGeminiResult').innerHTML = `<span style="color:${gc}">${geminiAudioResult.verdict}</span>`;
-    document.getElementById('audioGeminiScore').innerHTML = makeProgressBar(gScore, gc);
-    // Clues
-    const clues = geminiAudioResult.clues || [];
-    document.getElementById('audioClues').innerHTML = clues.length
-      ? clues.map(c=>`<span class="clue-tag"><i class="fas fa-circle-exclamation"></i>${c}</span>`).join('')
-      : '';
-    document.getElementById('audioExplanation').textContent = '📝 Gemini: ' + (geminiAudioResult.explanation || '');
+    const gIsFake=geminiAudioResult.verdict!=='REAL';
+    const gScore=gIsFake?geminiAudioResult.confidence:(1-geminiAudioResult.confidence);
+    const gc=gIsFake?'var(--danger)':'var(--success)';
+    document.getElementById('audioGeminiResult').innerHTML=`<span style="color:${gc}">${geminiAudioResult.verdict}</span>`;
+    document.getElementById('audioGeminiScore').innerHTML=makeProgressBar(gScore,gc);
+    const clues=geminiAudioResult.clues||[];
+    document.getElementById('audioClues').innerHTML=clues.length?clues.map(c=>`<span class="clue-tag"><i class="fas fa-circle-exclamation"></i>${c}</span>`).join(''):'';
+    document.getElementById('audioExplanation').textContent='📝 Gemini: '+(geminiAudioResult.explanation||'');
   } else {
-    document.getElementById('audioGeminiResult').innerHTML = `<span style="color:var(--warning)">No Gemini key or unsupported format</span>`;
+    document.getElementById('audioGeminiResult').innerHTML=`<span style="color:var(--warning)">Gemini unavailable or unsupported format</span>`;
   }
 
-  // FIA button if high threat
-  document.getElementById('audioFIABtn').style.display = avgFake > 0.5 ? 'inline-flex' : 'none';
+  // Update share card data
+  document.getElementById('audioShareCardIcon').textContent=verdictIcon;
+  document.getElementById('audioShareCardVerdict').textContent=finalVerdict;
+  document.getElementById('audioShareCardConf').textContent=`Fake Score: ${pct}% | Models: ${scores.length}`;
 
-  // Voice readout
+  document.getElementById('audioFIABtn').style.display=avgFake>0.5?'inline-flex':'none';
+
   if(document.getElementById('voiceOutputEnabled').checked){
     speak(`Audio analysis complete. Verdict: ${finalVerdict}. Fake voice probability: ${pct} percent.`);
   }
 }
-
 function shareAudioWhatsApp(){
   if(!audioAnalysisResult) return;
   const msg = `🎙️ NeuralEye Audio Analysis\n\nVerdict: ${audioAnalysisResult.finalVerdict}\nFake Voice Score: ${audioAnalysisResult.pct}%\n\nAI can clone any voice in 3 seconds. Verify before you trust! 🛡️\nneuraleye.github.io`;
@@ -2688,48 +2694,102 @@ async function startBatchAnalysis(){
     document.getElementById('batchLoaderText').textContent = `ANALYZING IMAGE ${i+1} OF ${batchFiles.length}...`;
     const file = batchFiles[i];
 
-    // Read as base64
     const base64 = await new Promise((res, rej) => {
       const reader = new FileReader();
       reader.onload = e => res(e.target.result.split(',')[1]);
       reader.onerror = rej;
       reader.readAsDataURL(file);
     });
-    const dataUrl = `data:${file.type};base64,${base64}`;
 
-    const prompt = `Analyze this image and determine if it is REAL, AI_GENERATED, or a DEEPFAKE.
-Respond ONLY in this JSON (no markdown):
+    // ── Gemini ──────────────────────────────────────────────────
+    const geminiPrompt = `Analyze this image. Is it REAL, AI_GENERATED, or DEEPFAKE?
+Respond ONLY in JSON (no markdown):
 {"verdict":"REAL" or "AI_GENERATED" or "DEEPFAKE","confidence":0.0-1.0,"threat_level":0-100,"top_clue":"single most important clue in 6 words max"}`;
 
-    let result = { verdict: 'ERROR', confidence: 0, threat_level: 0, top_clue: 'Analysis failed' };
-    try{
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [
-            { text: prompt },
-            { inlineData: { mimeType: file.type || 'image/jpeg', data: base64 }}
-          ]}],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 150 }
-        })
-      });
-      if(resp.ok){
-        const data = await resp.json();
-        const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-        result = JSON.parse(raw.replace(/```json|```/g,'').trim());
-      }
-    } catch(e){ console.warn('Batch item error:', e); }
+    const geminiCall = fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keys.gemini}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts:[{text:geminiPrompt},{inlineData:{mimeType:file.type||'image/jpeg',data:base64}}]}], generationConfig:{temperature:0.1,maxOutputTokens:150} })
+    }).then(async r=>{ if(!r.ok) throw new Error('Gemini '+r.status); const d=await r.json(); const raw=d.candidates?.[0]?.content?.parts?.[0]?.text||'{}'; return JSON.parse(raw.replace(/```json|```/g,'').trim()); }).catch(()=>null);
 
-    batchResultsData.push({ file, base64: dataUrl, result });
-    // Small delay between requests
-    if(i < batchFiles.length - 1) await new Promise(r=>setTimeout(r,800));
+    // ── HuggingFace ─────────────────────────────────────────────
+    const hfCall = (async()=>{
+      if(!keys.hf) return null;
+      const b64arr = atob(base64), arr = new Uint8Array(b64arr.length);
+      for(let j=0;j<b64arr.length;j++) arr[j]=b64arr.charCodeAt(j);
+      const blob = new Blob([arr],{type:file.type||'image/jpeg'});
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const resp = await fetch('https://api-inference.huggingface.co/models/Organika/sdxl-detector',{method:'POST',headers:{'Authorization':'Bearer '+keys.hf,'x-use-cache':'false'},body:blob});
+          if(resp.status===503){ await new Promise(r=>setTimeout(r,8000)); continue; }
+          if(!resp.ok) throw new Error('HF '+resp.status);
+          const data = await resp.json();
+          if(Array.isArray(data)){
+            const art=data.find(d=>/artif|ai|fake|gen|synth/i.test(d.label));
+            const real=data.find(d=>/real|human|photo/i.test(d.label));
+            const aiScore=art?.score??(real?1-real.score:0.5);
+            return {ai_score:aiScore,label:aiScore>0.5?'AI_GENERATED':'REAL'};
+          }
+        } catch(e){ if(attempt===2) return null; }
+      }
+      return null;
+    })();
+
+    // ── Sightengine ─────────────────────────────────────────────
+    const seCall = (async()=>{
+      if(!keys.seUser||!keys.seSecret) return null;
+      const b64arr = atob(base64), arr = new Uint8Array(b64arr.length);
+      for(let j=0;j<b64arr.length;j++) arr[j]=b64arr.charCodeAt(j);
+      const seBlob = new Blob([arr],{type:file.type||'image/jpeg'});
+      const form = new FormData();
+      form.append('models','genai'); form.append('api_user',keys.seUser); form.append('api_secret',keys.seSecret);
+      form.append('media', seBlob, file.name||'img.jpg');
+      try{
+        const resp = await fetch('https://api.sightengine.com/1.0/check.json',{method:'POST',body:form});
+        if(!resp.ok) return null;
+        const data = await resp.json();
+        const score = data.type?.ai_generated??0;
+        return {ai_score:score,label:score>0.5?'AI_GENERATED':'REAL'};
+      } catch(){ return null; }
+    })();
+
+    // ── Combine all 3 simultaneously ─────────────────────────────
+    const [geminiRes, hfRes, seRes] = await Promise.all([geminiCall, hfCall, seCall]);
+
+    // Weighted combined score
+    const scores = [];
+    let geminiAI = 0.5;
+    if(geminiRes){ geminiAI = geminiRes.verdict==='REAL'?(1-geminiRes.confidence):(geminiRes.confidence||0.5); scores.push(geminiAI); }
+    if(hfRes){ scores.push(hfRes.ai_score); }
+    if(seRes){ scores.push(seRes.ai_score); }
+    const combinedAI = scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 0.5;
+
+    // Final verdict from combined
+    let finalVerdict, topClue;
+    if(combinedAI>=0.7){ finalVerdict='AI_GENERATED'; }
+    else if(combinedAI>=0.45){ finalVerdict='DEEPFAKE'; }
+    else { finalVerdict='REAL'; }
+    topClue = geminiRes?.top_clue || (hfRes?`HF AI score: ${Math.round((hfRes?.ai_score||0)*100)}%`:'No specific clue');
+
+    batchResultsData.push({
+      file,
+      base64: `data:${file.type};base64,${base64}`,
+      result: {
+        verdict: finalVerdict,
+        confidence: combinedAI,
+        threat_level: Math.round(combinedAI*100),
+        top_clue: topClue,
+        gemini: geminiRes,
+        hf: hfRes,
+        se: seRes
+      }
+    });
+
+    if(i < batchFiles.length - 1) await new Promise(r=>setTimeout(r,500));
   }
 
   document.getElementById('batchLoader').style.display = 'none';
   renderBatchResults();
 }
-
 function renderBatchResults(){
   document.getElementById('batchResults').style.display = 'block';
   const counts = { REAL: 0, AI_GENERATED: 0, DEEPFAKE: 0, ERROR: 0 };
@@ -2778,6 +2838,122 @@ function shareBatchWhatsApp(){
   const fakeCount = batchResultsData.filter(d=>d.result.verdict!=='REAL').length;
   const msg = `🔍 NeuralEye Batch Check\n\n${lines.join('\n')}\n\n⚠️ ${fakeCount} of ${batchResultsData.length} images flagged as suspicious\n\nVerify before you share! neuraleye.github.io`;
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+  // ============================================================
+// EXPORT & SHARE — VIDEO
+// ============================================================
+async function exportVideoPDF(){
+  const verdict = document.getElementById('videoVerdictLabel')?.textContent || 'UNKNOWN';
+  const pct = document.getElementById('videoThreatPct')?.textContent || '0%';
+  const explanation = document.getElementById('vGeminiExplanation')?.innerText || '';
+  const hf1 = document.getElementById('vHF1Result')?.innerText || '';
+  const hf2 = document.getElementById('vHF2Result')?.innerText || '';
+  const gemR = document.getElementById('vGeminiResult')?.innerText || '';
+  const seR  = document.getElementById('vSEResult')?.innerText || '';
+  const {jsPDF}=window.jspdf, doc=new jsPDF();
+  doc.setFillColor(8,11,20); doc.rect(0,0,210,40,'F');
+  doc.setTextColor(0,229,255); doc.setFontSize(22); doc.setFont('courier','bold'); doc.text('NeuralEye',15,18);
+  doc.setFontSize(10); doc.setFont('courier','normal'); doc.text('VIDEO DEEPFAKE DETECTION REPORT',15,27);
+  doc.setTextColor(100,116,139); doc.text(new Date().toLocaleString(),15,35);
+  doc.setTextColor(0,0,0); doc.setFontSize(16); doc.setFont('courier','bold'); doc.text('VERDICT: '+verdict,15,55);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+  doc.text('Manipulation Probability: '+pct,15,65);
+  doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.text('Model Results:',15,77);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); let y=85;
+  doc.text('• HuggingFace #1 (dima806): '+hf1,15,y); y+=8;
+  doc.text('• HuggingFace #2 (Wvolf ViT): '+hf2,15,y); y+=8;
+  doc.text('• Gemini 1.5 Flash: '+gemR,15,y); y+=8;
+  doc.text('• Sightengine: '+seR,15,y); y+=12;
+  if(explanation){ doc.setFont('helvetica','bold'); doc.text('Gemini Analysis:',15,y); y+=8; doc.setFont('helvetica','normal'); const ln=doc.splitTextToSize(explanation,180); doc.text(ln,15,y); }
+  doc.setFontSize(8); doc.setTextColor(150,150,150); doc.text('Generated by NeuralEye — Verify before you share',15,285);
+  doc.save('NeuralEye-Video-Report-'+Date.now()+'.pdf');
+}
+
+async function generateVideoShareCard(){
+  const verdict = document.getElementById('videoVerdictLabel')?.textContent || '';
+  const pct = document.getElementById('videoThreatPct')?.textContent || '';
+  const icon = document.getElementById('videoVerdictIcon')?.textContent || '🎬';
+  document.getElementById('videoShareCardIcon').textContent = icon;
+  document.getElementById('videoShareCardVerdict').textContent = verdict;
+  document.getElementById('videoShareCardConf').textContent = 'Manipulation Probability: '+pct;
+  const sc = document.getElementById('videoShareCard'); sc.style.display='block';
+  const canvas = await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
+  const a=document.createElement('a'); a.download='NeuralEye-Video-Result.png'; a.href=canvas.toDataURL('image/png'); a.click();
+  sc.style.display='none';
+}
+
+// ============================================================
+// EXPORT & SHARE — AUDIO
+// ============================================================
+async function exportAudioPDF(){
+  if(!audioAnalysisResult){ alert('Please analyze audio first'); return; }
+  const {finalVerdict,pct,hfResult,geminiAudioResult} = audioAnalysisResult;
+  const {jsPDF}=window.jspdf, doc=new jsPDF();
+  doc.setFillColor(8,11,20); doc.rect(0,0,210,40,'F');
+  doc.setTextColor(0,229,255); doc.setFontSize(22); doc.setFont('courier','bold'); doc.text('NeuralEye',15,18);
+  doc.setFontSize(10); doc.setFont('courier','normal'); doc.text('AUDIO DEEPFAKE DETECTION REPORT',15,27);
+  doc.setTextColor(100,116,139); doc.text(new Date().toLocaleString(),15,35);
+  doc.setTextColor(0,0,0); doc.setFontSize(16); doc.setFont('courier','bold'); doc.text('VERDICT: '+finalVerdict,15,55);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+  doc.text('Combined Fake Voice Score: '+pct+'%',15,65);
+  doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.text('Model Results:',15,77);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); let y=85;
+  if(hfResult) { doc.text('• HuggingFace (mo-zada): '+hfResult.label+' ('+Math.round(hfResult.fakeScore*100)+'%)',15,y); y+=8; }
+  if(geminiAudioResult){ doc.text('• Gemini: '+geminiAudioResult.verdict+' ('+Math.round((geminiAudioResult.confidence||0)*100)+'%)',15,y); y+=8; }
+  if(geminiAudioResult?.explanation){ y+=4; doc.setFont('helvetica','bold'); doc.text('Gemini Analysis:',15,y); y+=8; doc.setFont('helvetica','normal'); const ln=doc.splitTextToSize(geminiAudioResult.explanation,180); doc.text(ln,15,y); y+=ln.length*6+4; }
+  if(geminiAudioResult?.clues?.length){ y+=4; doc.setFont('helvetica','bold'); doc.text('Detected Clues:',15,y); y+=8; doc.setFont('helvetica','normal'); geminiAudioResult.clues.forEach(c=>{ doc.text('• '+c,15,y); y+=7; }); }
+  doc.setFontSize(8); doc.setTextColor(150,150,150); doc.text('Generated by NeuralEye — Verify before you trust',15,285);
+  doc.save('NeuralEye-Audio-Report-'+Date.now()+'.pdf');
+}
+
+async function generateAudioShareCard(){
+  if(!audioAnalysisResult){ alert('Please analyze audio first'); return; }
+  const sc = document.getElementById('audioShareCard'); sc.style.display='block';
+  const canvas = await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
+  const a=document.createElement('a'); a.download='NeuralEye-Audio-Result.png'; a.href=canvas.toDataURL('image/png'); a.click();
+  sc.style.display='none';
+}
+
+// ============================================================
+// EXPORT & SHARE — BATCH
+// ============================================================
+async function exportBatchPDF(){
+  if(!batchResultsData.length){ alert('Please run batch analysis first'); return; }
+  const {jsPDF}=window.jspdf, doc=new jsPDF();
+  doc.setFillColor(8,11,20); doc.rect(0,0,210,40,'F');
+  doc.setTextColor(0,229,255); doc.setFontSize(22); doc.setFont('courier','bold'); doc.text('NeuralEye',15,18);
+  doc.setFontSize(10); doc.setFont('courier','normal'); doc.text('BATCH IMAGE CHECK REPORT',15,27);
+  doc.setTextColor(100,116,139); doc.text(new Date().toLocaleString(),15,35);
+  const fakeCount=batchResultsData.filter(d=>d.result.verdict!=='REAL').length;
+  doc.setTextColor(0,0,0); doc.setFontSize(14); doc.setFont('courier','bold');
+  doc.text(`${fakeCount} of ${batchResultsData.length} images flagged as suspicious`,15,52);
+  doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.setTextColor(50,50,50); doc.text('Results:',15,65);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); let y=74;
+  batchResultsData.forEach((d,i)=>{
+    if(y>270){ doc.addPage(); y=20; }
+    const conf=Math.round((d.result.confidence||0)*100);
+    const hfStr = d.result.hf ? ` | HF: ${Math.round((d.result.hf.ai_score||0)*100)}%` : '';
+    const seStr = d.result.se ? ` | SE: ${Math.round((d.result.se.ai_score||0)*100)}%` : '';
+    doc.text(`${i+1}. ${d.file.name}`,15,y); y+=6;
+    doc.text(`   Verdict: ${d.result.verdict} | Gemini: ${conf}%${hfStr}${seStr}`,15,y); y+=6;
+    if(d.result.top_clue){ doc.setTextColor(120,120,120); doc.text(`   Clue: ${d.result.top_clue}`,15,y); doc.setTextColor(50,50,50); y+=8; } else { y+=4; }
+  });
+  doc.setFontSize(8); doc.setTextColor(150,150,150); doc.text('Generated by NeuralEye — Verify before you share',15,285);
+  doc.save('NeuralEye-Batch-Report-'+Date.now()+'.pdf');
+}
+
+async function generateBatchShareCard(){
+  if(!batchResultsData.length){ alert('Please run batch analysis first'); return; }
+  const fakeCount=batchResultsData.filter(d=>d.result.verdict!=='REAL').length;
+  const icon = fakeCount>0 ? '⚠️' : '✅';
+  const verdict = fakeCount>0 ? `${fakeCount}/${batchResultsData.length} IMAGES SUSPICIOUS` : `ALL ${batchResultsData.length} IMAGES APPEAR REAL`;
+  document.getElementById('batchShareCardIcon').textContent=icon;
+  document.getElementById('batchShareCardVerdict').textContent=verdict;
+  document.getElementById('batchShareCardConf').textContent=`Checked with Gemini + HuggingFace + Sightengine`;
+  const sc=document.getElementById('batchShareCard'); sc.style.display='block';
+  const canvas=await html2canvas(sc,{backgroundColor:'#080b14',scale:2,useCORS:true});
+  const a=document.createElement('a'); a.download='NeuralEye-Batch-Result.png'; a.href=canvas.toDataURL('image/png'); a.click();
+  sc.style.display='none';
 }
 </script>
 </body>
