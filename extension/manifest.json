@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "NeuralEye — AI Deepfake Detector",
+  "short_name": "NeuralEye",
+  "version": "1.0.0",
+  "description": "Detect AI-generated images & deepfakes using Gemini, HuggingFace & Sightengine. Right-click any image to check it instantly. Built for Pakistan's digital safety.",
+
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "https://api-inference.huggingface.co/*",
+    "https://api.sightengine.com/*"
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "NeuralEye — AI Deepfake Detector",
+    "default_icon": {
+      "16": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
+  },
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["logo.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
