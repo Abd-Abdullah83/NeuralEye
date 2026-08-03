@@ -47,7 +47,7 @@
 ╠══════════════════╦═══════════════════════════════════════════════════╣
 ║  🏠 Home         ║                                                   ║
 ║  🔍 Image Check  ║   ╔════════════════════════════════════════╗     ║
-║  🖼️ Batch Check  ║   ║  🚨  DEEPFAKE / AI-GENERATED !         ║     ║
+║  🖼️ Batch Check  ║   ║  🚨  DEEPFAKE / AI-GENERATED          ║     ║
 ║  🎬 Video Detect ║   ║  Combined Score: 94%                   ║     ║
 ║  🎙️ Audio Detect ║   ║  ██████████████████████░░  CRITICAL   ║     ║
 ║  📰 News Check   ║   ╚════════════════════════════════════════╝     ║
